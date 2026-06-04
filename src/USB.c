@@ -138,6 +138,10 @@ void usbInit(void) {
     return;
 }
 
+void usbSend(void) {
+
+}
+
 int8_t count = 0;
 
 ISR(USB_GEN_vect) {
@@ -165,10 +169,14 @@ ISR(USB_GEN_vect) {
         if (udCfgStatus) {
             UENUM = 1;
             if (UEINTX & (1 << RWAL)) {
-                //UECONX |= (1 << STALLRQ); Stalling the interrupt causes stuff to happen
-                UEDATX = count; //   This doesn't...
-                UEDATX = count++; // I surely am doing something wrong - at least interrupt in-wise.
-            // ?????????????
+                /*
+                //computah
+                UENUM = 1;
+                while (!(UEINTX & (1 << RWAL)));
+                UEDATX = count++;
+                UEDATX = 0;
+                UEINTX &= ~(1 << FIFOCON); //push fifo
+                */
             }
         }
     }
