@@ -165,11 +165,9 @@ ISR(USB_GEN_vect) {
         if (udCfgStatus) {
             UENUM = 1;
             if (UEINTX & (1 << RWAL)) {
-                UECONX |= (1 << STALLRQ);
-                /*
-                UEDATX = count;
-                UEDATX = count++;
-                */
+                //UECONX |= (1 << STALLRQ); Stalling the interrupt causes stuff to happen
+                UEDATX = count; //   This doesn't...
+                UEDATX = count++; // I surely am doing something wrong - at least interrupt in-wise.
             // ?????????????
             }
         }
@@ -203,6 +201,7 @@ ISR(USB_COM_vect) {
 
         PORTB ^= (1 << PB0);
 
+        // temporary logging
         for (uint8_t i = 0; i < 5; i++) {
             SH1107_clearPage(i, 0, 127); 
             /*
@@ -259,12 +258,6 @@ ISR(USB_COM_vect) {
                     break;
             }
             while(!(UEINTX & (1 << TXINI)));
-            /*
-            if (UEINTX & (1 << RXOUTI)) {
-                UEINTX &= ~(1 << RXOUTI); //TODO: check if having this if block even does anything
-                return;
-                }
-                */
             descLen = requestLen > descLen ? descLen : requestLen;
             while (descLen > 0) {
                 uint8_t packetLen = descLen > UD_EP0_SIZE ? UD_EP0_SIZE : descLen;
