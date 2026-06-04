@@ -309,8 +309,9 @@ void SH1107_drawString(uint8_t x, uint8_t page, int8_t tracking, char str[], uin
     uint16_t valOffset = 1;  
 
     while (str[chars] != '\0') {
-        if (str[chars] == '%') {
+        if (str[chars] == '%' && str[chars + 1] != '\0') {
             if (str[chars + 1] == 'u') {
+                valOffset = 1;
                 for (uint8_t i = 0; i < valCharLen - 1; i++) {
                     valOffset *= 10;
                 }
@@ -327,16 +328,4 @@ void SH1107_drawString(uint8_t x, uint8_t page, int8_t tracking, char str[], uin
             chars++; 
         }
     }
-
-    /*
-    for (; i < strLen + 1; i++) {
-        SH1107_drawChar(x1, page, str[i]);
-        x1 += (tracking + 5); 
-    }
-    while (str[i] != '\0' || i < 128) {
-        SH1107_drawChar(x1, page, str[i]);
-        x1 += (tracking + 5);
-        i++;
-    }
-    */
 }

@@ -1,6 +1,9 @@
 #ifndef global_h
 #define global_h
 
+volatile uint8_t udCfgStatus;
+uint8_t idleLimit; 
+
 // usb stuff
 #define GET_STATUS 0x00
 #define CLEAR_FEATURE 0x01
@@ -11,6 +14,14 @@
 #define SET_CONFIGURATION 0x09
 #define GET_INTERFACE 0x0A
 #define SET_INTERFACE 0x0B2
+
+// HID stuff
+#define GET_REPORT 0x01
+#define GET_IDLE 0x02
+#define GET_PROTOCOL 0x03
+#define SET_REPORT 0x09
+#define SET_IDLE 0x0A
+#define SET_PROTOCOL 0x0B
 
 #define UD_EP0_SIZE 0x40 // 64
 
