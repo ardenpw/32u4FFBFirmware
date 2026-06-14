@@ -22,17 +22,17 @@ static const uint8_t udDeviceDescriptor[] PROGMEM = {
 };
 
 static const uint8_t udHIDReportDescriptor[] PROGMEM = {
-    0x05, 0x01, // Usage Page:  Generic Desktop Page
-    0x09, 0x04, // Usage: Joystick 
+    0x05, 0x02, // Usage Page: Simulation Controls
+    0x09, 0x02, // Usage: Automobile Simulation Device
     0xA1, 0x01, // Collection: Application
-    0x09, 0x30, //      Usage: X
-    0x09, 0x31, //      Usage: Y
-    0x15, 0x81, //      Logical Min: -127
-    0x25, 0x7F, //      Logical Max: 127
-    0x75, 0x08, //      Retport Size: 8 (bits)
-    0x95, 0x02, //      Report Count: 2
+    0x05, 0x02, //      Usage Page: Simulation Controls
+    0x09, 0xC8, //      Usage: Steering
+    0x16, 0x01, 0x80, //Logical Minimum: (-32767)
+    0x26, 0xFF, 0x7F, //Logical Maximum: (32767)
+    0x75, 0x10, //      Report Size: 16b
+    0x95, 0x01, //      Report Count: 1
     0x81, 0x02, //      Input Report (Data, Variable, Absolute)
-    0xC0        // End Collection
+    0xC0
 };
 
 static const uint8_t udConfigurationDescriptor[] PROGMEM = {
@@ -138,11 +138,33 @@ void usbInit(void) {
     return;
 }
 
-void usbSend(void) {
+int16_t count = 0;
+uint8_t reportRDY = 0;
 
+typedef struct {
+    int16_t steering;
+} data;
+
+data pendRept;
+
+void prepUSBReport(void) {
+    if (!udCfgStatus) { return; }
+    cli(); // dissable interrupts so we get a non-malformed data struct
+    pendRept.steering = count++;
+    reportRDY = 1;
+    sei();
 }
 
-int8_t count = 0;
+void ep1RDY(void) {
+    UENUM = 1;
+    if (!reportRDY) { return; }
+    if (!(UEINTX & (1 << RWAL))) { return; }
+    UEDATX = (pendRept.steering & 0xFF);
+    UEDATX = (pendRept.steering >> 8);
+    UEINTX &= ~(1 << FIFOCON); // push fifo
+    reportRDY = 0;
+}
+
 
 ISR(USB_GEN_vect) {
     uint8_t flags = UDINT;
@@ -165,21 +187,22 @@ ISR(USB_GEN_vect) {
         
         UEIENX = (1 << RXSTPE);
     }
+    /* 4 later lol
     if (flags & (1 << SOFI)) {
         if (udCfgStatus) {
-            UENUM = 1;
+            //UENUM = 1;
             if (UEINTX & (1 << RWAL)) {
-                /*
                 //computah
                 UENUM = 1;
                 while (!(UEINTX & (1 << RWAL)));
                 UEDATX = count++;
                 UEDATX = 0;
                 UEINTX &= ~(1 << FIFOCON); //push fifo
-                */
+                
             }
         }
     }
+    */
 }
 
 ISR(USB_COM_vect) {

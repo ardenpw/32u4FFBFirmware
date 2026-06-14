@@ -2,24 +2,8 @@
 int main() {
     SH1107_init();
     usbInit(); 
-
-    typedef struct {
-        int8_t x, y;
-    } boing;
-
-    boing a;
-    int8_t packets = 0;
-
-    while(1) {
-        UENUM = 1;
-        while (UEBCLX < sizeof(boing)) {
-            while (!(UEINTX & (1 << RWAL)));
-            UEDATX = packets++;
-            UEDATX = 0;
-            UEINTX &= ~(1 << FIFOCON); //push fifo
-        }
-        
-    }; 
+    
+    while(1) { prepUSBReport(); ep1RDY(); }; 
     /*
     sei() only enables interrupt servicing; it doesn’t create 
     a separate background task, so main must stay alive while 
