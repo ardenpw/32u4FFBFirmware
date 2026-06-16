@@ -9,10 +9,6 @@ typedef struct {
     uint8_t y;
 } vector2;
 
-void dWait(void);
-void SPIinit(void);
-void SPItx(char data, uint8_t DC);
-void SPIReset(void);
 void SH1107_init(void);
 void SH1107_pageTX(uint8_t page, uint8_t column, char data, bool oneShot);
 void SH1107_clearScreen(void);

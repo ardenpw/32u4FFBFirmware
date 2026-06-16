@@ -13,5 +13,7 @@
 #include "global.h"
 #include "USB.h"
 #include "SH1107.h"
+#include "mySPI.h"
+#include "MT6835.h"
 
 #endif //#ifndef include_h

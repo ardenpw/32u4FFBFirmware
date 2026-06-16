@@ -150,7 +150,8 @@ data pendRept;
 void prepUSBReport(void) {
     if (!udCfgStatus) { return; }
     cli(); // dissable interrupts so we get a non-malformed data struct
-    pendRept.steering = count++;
+    uint32_t val = (MT6835_burst() >> 11);
+    pendRept.steering = ((val * 65535) / 2097151) - 32767;
     reportRDY = 1;
     sei();
 }
