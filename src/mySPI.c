@@ -25,14 +25,15 @@ void SPIinit(void) {
     PORTF &= ~(1 << GLOB_DC_PIN); //start in command mode
 }
 
-uint8_t SPItx(char data, uint8_t DC, volatile uint8_t *port, uint8_t cs_pin) { // DC: 1 data, 0 cmd
+uint8_t SPItx(char data, uint8_t DC, volatile uint8_t *port, uint8_t cs_pin, uint8_t postState) { // DC: 1 data, 0 cmd
     *port &= ~(1 << cs_pin);
     if (DC) { PORTF |= (1 << GLOB_DC_PIN); }
     else    { PORTF &= ~(1 << GLOB_DC_PIN); }
     SPDR = data;
     dWait();
-    *port |= (1 << cs_pin);
-    return SPDR;
+    uint8_t rx = SPDR;
+    if (!postState) { *port |= (1 << cs_pin); }
+    return rx;
 }
 
 void SPIReset(void) {

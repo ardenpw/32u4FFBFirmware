@@ -146,12 +146,16 @@ typedef struct {
 } data;
 
 data pendRept;
+uint32_t a;
+int16_t b;
 
 void prepUSBReport(void) {
     if (!udCfgStatus) { return; }
     cli(); // dissable interrupts so we get a non-malformed data struct
-    uint32_t val = (MT6835_burst() >> 11);
-    pendRept.steering = ((val * 65535) / 2097151) - 32767;
+    a = (MT6835_burstRead() >> 11);
+    a = (uint16_t)(((uint64_t)a * 65535 + 1048576) / 2097151);
+    b = 32767 - a;
+    pendRept.steering = b;
     reportRDY = 1;
     sei();
 }

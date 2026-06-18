@@ -1,13 +1,18 @@
 #include "include.h"
 int main() {
     SH1107_init();
-    while (1) {
-        SH1107_drawString(0,1,1,"%u", (uint16_t)MT6835_burst());
-    }
     /*
-    usbInit(); 
-    
-    while(1) { prepUSBReport(); ep1RDY(); }; 
+    uint32_t a = 0;
+    while (1) {
+        a = (MT6835_burstRead() >> 11);
+        a = (uint16_t)(((uint64_t)a * 65535 + 1048576) / 2097151);
+        SH1107_drawString(0,1,1,"%u", (uint16_t)a);
+    }
+    */
+   usbInit(); 
+   
+   while(1) { prepUSBReport(); ep1RDY(); }; 
+   /*
     */
     /*
     sei() only enables interrupt servicing; it doesn’t create 

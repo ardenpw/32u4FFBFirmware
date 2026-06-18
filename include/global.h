@@ -4,6 +4,9 @@
 volatile uint8_t udCfgStatus;
 uint8_t idleLimit; 
 
+#define STAY 1
+#define FLIP 0
+
 // usb stuff
 #define GET_STATUS 0x00
 #define CLEAR_FEATURE 0x01

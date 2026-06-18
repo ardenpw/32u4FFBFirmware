@@ -102,24 +102,24 @@ void SH1107_init(void) {
     SPIinit();
     SPIReset();
 
-    SPItx(0x20, 0, &PORTF, SH1107_CS_PIN); //Page Address Mode
-    SPItx(0x81, 0, &PORTF, SH1107_CS_PIN); //Contrast control mode
-    SPItx(0, 0, &PORTF, SH1107_CS_PIN); //Contrast control value
-    SPItx(0xA0, 0, &PORTF, SH1107_CS_PIN); //Normal display direction (seg remap)
-    SPItx(0xA8, 0, &PORTF, SH1107_CS_PIN); //multiplex rotation set
-    SPItx(127, 0, &PORTF, SH1107_CS_PIN); //multiplex ratio
-    SPItx(0xA6, 0, &PORTF, SH1107_CS_PIN); //normal display mode
-    SPItx(0xD3, 0, &PORTF, SH1107_CS_PIN); //display offset mode
-    SPItx(0x00, 0, &PORTF, SH1107_CS_PIN); //display offset value
-    SPItx(0xAD, 0, &PORTF, SH1107_CS_PIN); //DC-DC control mode set
-    SPItx(0x81, 0, &PORTF, SH1107_CS_PIN); //DC-DC On/Off mode set 
+    SPItx(0x20, 0, &PORTF, SH1107_CS_PIN, FLIP); //Page Address Mode
+    SPItx(0x81, 0, &PORTF, SH1107_CS_PIN, FLIP); //Contrast control mode
+    SPItx(0, 0, &PORTF, SH1107_CS_PIN, FLIP); //Contrast control value
+    SPItx(0xA0, 0, &PORTF, SH1107_CS_PIN, FLIP); //Normal display direction (seg remap)
+    SPItx(0xA8, 0, &PORTF, SH1107_CS_PIN, FLIP); //multiplex rotation set
+    SPItx(127, 0, &PORTF, SH1107_CS_PIN, FLIP); //multiplex ratio
+    SPItx(0xA6, 0, &PORTF, SH1107_CS_PIN, FLIP); //normal display mode
+    SPItx(0xD3, 0, &PORTF, SH1107_CS_PIN, FLIP); //display offset mode
+    SPItx(0x00, 0, &PORTF, SH1107_CS_PIN, FLIP); //display offset value
+    SPItx(0xAD, 0, &PORTF, SH1107_CS_PIN, FLIP); //DC-DC control mode set
+    SPItx(0x81, 0, &PORTF, SH1107_CS_PIN, FLIP); //DC-DC On/Off mode set 
 
     //clear internal ram
     // Already cleared on reset?
     //end ram clear
 
     //set display on
-    SPItx(0xAF, 0, &PORTF, SH1107_CS_PIN); //display on
+    SPItx(0xAF, 0, &PORTF, SH1107_CS_PIN, FLIP); //display on
     //end display on
     SH1107_clearScreen();
 }
@@ -128,15 +128,15 @@ void SH1107_pageTX(uint8_t page, uint8_t column, char data, bool oneShot) { // p
     uint8_t higher = 0b00010000;
     uint8_t lower = 0b00000000;
 
-    SPItx(0b10110000 + page, 0, &PORTF, SH1107_CS_PIN); // set page (0 + offset)
+    SPItx(0b10110000 + page, 0, &PORTF, SH1107_CS_PIN, FLIP); // set page (0 + offset)
 
     lower = (lower & 0b11110000) | (column & 0b00001111);
     higher = (higher & 0b11110000) | ((column >> 4) & 0b00000111);
 
-    SPItx(higher, 0, &PORTF, SH1107_CS_PIN); // send our higher column address
-    SPItx(lower, 0, &PORTF, SH1107_CS_PIN); // send our higher column address
+    SPItx(higher, 0, &PORTF, SH1107_CS_PIN, FLIP); // send our higher column address
+    SPItx(lower, 0, &PORTF, SH1107_CS_PIN, FLIP); // send our higher column address
 
-    SPItx(data, 1, &PORTF, SH1107_CS_PIN); // send data in data mode
+    SPItx(data, 1, &PORTF, SH1107_CS_PIN, FLIP); // send data in data mode
     PORTF &= ~(1 << GLOB_DC_PIN); // set back to command mode
 }
 
@@ -145,13 +145,13 @@ void SH1107_clearScreen(void) {
     uint8_t lower = 0b00000000;
 
     for (uint8_t y = 0; y < 16; y++) {
-        SPItx(0b10110000 + y, 0, &PORTF, SH1107_CS_PIN);
+        SPItx(0b10110000 + y, 0, &PORTF, SH1107_CS_PIN, FLIP);
         for (uint8_t x = 0; x < 128; x++) {
             lower = (lower & 0b11110000) | (x & 0b00001111);
             higher = (higher & 0b11110000) | ((x >> 4) & 0b00000111);
-            SPItx(higher, 0, &PORTF, SH1107_CS_PIN);
-            SPItx(lower, 0, &PORTF, SH1107_CS_PIN);
-            SPItx(0b00000000, 1, &PORTF, SH1107_CS_PIN);
+            SPItx(higher, 0, &PORTF, SH1107_CS_PIN, FLIP);
+            SPItx(lower, 0, &PORTF, SH1107_CS_PIN, FLIP);
+            SPItx(0b00000000, 1, &PORTF, SH1107_CS_PIN, FLIP);
             PORTF &= ~(1 << GLOB_DC_PIN); // set back to command mode
         }
     }
@@ -170,14 +170,14 @@ void SH1107_drawPoint(uint8_t x, uint8_t y) { //char shape, uint8_t radius
     uint8_t page = y >> 3; // x/8
     uint8_t pageData = 0;
     pageData |= (1 << (page % 8));
-    SPItx(0b10110000 + page, 0, &PORTF, SH1107_CS_PIN); 
+    SPItx(0b10110000 + page, 0, &PORTF, SH1107_CS_PIN, FLIP); 
 
     lower = (lower & 0b11110000) | (x & 0b00001111);
     higher = (higher & 0b11110000) | ((x >> 4) & 0b00000111);
-    SPItx(higher, 0, &PORTF, SH1107_CS_PIN);
-    SPItx(lower, 0, &PORTF, SH1107_CS_PIN);
+    SPItx(higher, 0, &PORTF, SH1107_CS_PIN, FLIP);
+    SPItx(lower, 0, &PORTF, SH1107_CS_PIN, FLIP);
 
-    SPItx(pageData, 1, &PORTF, SH1107_CS_PIN);
+    SPItx(pageData, 1, &PORTF, SH1107_CS_PIN, FLIP);
 }
 
 void SH1107_drawLine(uint8_t x0,uint8_t y0,uint8_t x1,uint8_t y1) { //Bresenham's Line Algorithm
