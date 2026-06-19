@@ -1,6 +1,9 @@
 #ifndef global_h
 #define global_h
 
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+
 volatile uint8_t udCfgStatus;
 uint8_t idleLimit; 
 

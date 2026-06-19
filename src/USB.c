@@ -146,16 +146,39 @@ typedef struct {
 } data;
 
 data pendRept;
-uint32_t a;
-int16_t b;
 
 void prepUSBReport(void) {
     if (!udCfgStatus) { return; }
+    
+    static uint32_t curr = 0; 
+    static uint32_t last = 0;
+    static int32_t delta = 0;
+    static int32_t total = 0; 
+    static int16_t output;
+    static const uint32_t encoderMax = 2097151;
+    static const uint32_t encoderMid = (encoderMax >> 1);
+    
     cli(); // dissable interrupts so we get a non-malformed data struct
-    a = (MT6835_burstRead() >> 11);
-    a = (uint16_t)(((uint64_t)a * 65535 + 1048576) / 2097151);
-    b = 32767 - a;
-    pendRept.steering = b;
+    
+    curr = (MT6835_burstRead() >> 11);
+    delta = (int32_t)(curr - last);
+    
+    if (delta > (int32_t)encoderMid) {
+        total += (encoderMax + 1);
+    }
+    else if (delta < (int32_t)-encoderMid) {
+        total -= (encoderMax + 1);
+    }
+    
+    total -= delta;
+    last = curr;
+    /*
+    2520 degrees over 16b equates to 9362pts/rev. 3.5 revolutions in each direction
+    */
+    output = (int16_t)(MIN(32767, MAX(-32768, ((int64_t)total * 9362) / encoderMax)));
+    //output = (int16_t)(((int64_t)total * 9362) / encoderMax);
+    
+    pendRept.steering = output;
     reportRDY = 1;
     sei();
 }
