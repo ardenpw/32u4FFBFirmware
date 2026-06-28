@@ -1,112 +1,5 @@
 #include "include.h"
 
-static const uint8_t udDeviceDescriptor[] PROGMEM = {
-   18, // bLength
-    1, // bDescriptorType
-    0x00,
-    0x02, // bcdUSB (2.0)
-    0, // bDeviceClass (defined in interface [in cfg. descriptor])
-    0, // bDeviceSubclass (above is 0)
-    0, 
-    UD_EP0_SIZE, // 64
-    (0x1209 & 255),
-    ((0x1209 >> 8) & 255), // idVendor, https://pid.codes
-    (0x0001 & 255),
-    ((0x0001 >> 8) & 255), // idProduct https://pid.codes
-    0x00,
-    0x01, // bcdDevice release number
-    0,
-    0, // TODO: this. 1, // (iProduct at index 1)
-    0,
-    1
-};
-
-static const uint8_t udHIDReportDescriptor[] PROGMEM = {
-    0x05, 0x02, // Usage Page: Simulation Controls
-    0x09, 0x02, // Usage: Automobile Simulation Device
-    0xA1, 0x01, // Collection: Application
-    0x05, 0x02, //      Usage Page: Simulation Controls
-    0x09, 0xC8, //      Usage: Steering
-    0x16, 0x01, 0x80, //Logical Minimum: (-32767)
-    0x26, 0xFF, 0x7F, //Logical Maximum: (32767)
-    0x75, 0x10, //      Report Size: 16b
-    0x95, 0x01, //      Report Count: 1
-    0x81, 0x02, //      Input Report (Data, Variable, Absolute)
-    0xC0
-};
-
-static const uint8_t udConfigurationDescriptor[] PROGMEM = {
-    //configuration descriptor
-    9, //bLength
-    0x02, //const CONFIGURATION
-    34, 0x00, //bytes configuration descriptor TOTAL (everything)
-    1, // num interfaces
-    1, // bConfigurationValue
-    0, // iConfiguration
-    0b10000000, // bmAttributes
-    50, // bMaxPower
-
-    // interface descriptor
-    9, // bLength
-    0x04, // const INTERFACE
-    0x00, // 0th interface
-    0x00, // no alternates
-    1, // additional endpoints
-    0x03, // HID device (yay! [bInterfaceClass]) 
-    0x00, // bInterfaceSubClass
-    0x00, // bInterfaceProtocol (defined in HID)
-    0x00, // iInterface
-
-    // HID descriptor
-    9, // bLength
-    0x21, // class descriptor type
-    0x11, 0x01, // bcdHID release number
-    0x00, // country code
-    0x01, // num. descriptors
-    0x22, // bDescriptorType
-    sizeof(udHIDReportDescriptor), 0,
-
-    // endpoint descriptor (IN)
-    7,
-    0x05, // bDescriptorType
-    0b10000001, // bEndpointAddress (ep 1, in)
-    0b00000011, // bmAttributes
-    64, 0, // wMaxPacketSize (in B) (size of bank [ep1 will be 64B])
-    1 // once every ms
-};
-
-static const uint8_t udStringLanguageDescriptor[] PROGMEM = {
-    4, // bLength
-    0x03, // bDescriptorType (string)
-    0x09, 0x04, // wLANGID (0x0409 = English US)
-};
-
-static const uint8_t udStringDeviceDescriptor[] PROGMEM = {
-    42, // bLength
-    0x03, // bDescriptorType (string)
-    0x54, 0x00, 
-    0x73, 0x00, 
-    0x20, 0x00, 
-    0x69, 0x00, 
-    0x73, 0x00, 
-    0x20, 0x00, 
-    0x66, 0x00, 
-    0x75, 0x00, 
-    0x63, 0x00, 
-    0x6B, 0x00, 
-    0x65, 0x00, 
-    0x64, 0x00, 
-    0x20, 0x00, 
-    0x66, 0x00, 
-    0x72, 0x00, 
-    0x20, 0x00, 
-    0x4C, 0x00, 
-    0x4D, 0x00, 
-    0x41, 0x00, 
-    0x4F, 0x00
-    // TODO: why doesn't this work
-};
-
 void _blink(uint8_t delayMS) {
     while (1) {
         PORTB ^= (1 << PB0);
@@ -132,7 +25,7 @@ void usbInit(void) {
     UDIEN = 0b00001100;
     
     UDCON &= ~(1 << DETACH);
-    
+
     
     sei(); 
     return;
@@ -140,8 +33,10 @@ void usbInit(void) {
 
 int16_t count = 0;
 uint8_t reportRDY = 0;
+uint8_t unknownPacket = 0;
 
 typedef struct {
+    uint8_t reportID;
     int16_t steering;
 } data;
 
@@ -178,8 +73,10 @@ void prepUSBReport(void) {
     output = (int16_t)(MIN(32767, MAX(-32768, ((int64_t)total * 9362) / encoderMax)));
     //output = (int16_t)(((int64_t)total * 9362) / encoderMax);
     
+    pendRept.reportID = 1;
     pendRept.steering = output;
     reportRDY = 1;
+
     sei();
 }
 
@@ -187,6 +84,7 @@ void ep1RDY(void) {
     UENUM = 1;
     if (!reportRDY) { return; }
     if (!(UEINTX & (1 << RWAL))) { return; }
+    UEDATX = pendRept.reportID;
     UEDATX = (pendRept.steering & 0xFF);
     UEDATX = (pendRept.steering >> 8);
     UEINTX &= ~(1 << FIFOCON); // push fifo
@@ -261,31 +159,33 @@ ISR(USB_COM_vect) {
         PORTB ^= (1 << PB0);
 
         // temporary logging
+        /*
         for (uint8_t i = 0; i < 5; i++) {
             SH1107_clearPage(i, 0, 127); 
-            /*
             TODO: TEMPORARY FIX. FLASHING BAD. 
             The values on the screen dont clear propperly,leading to what seem 
             like random values that dont make sense. Looping through each line 
             and clearing it so the formatter can print the new correct number 
             fixes this.
-            */
         }
-        SH1107_drawString(0, 0, 1, "bmRequestType: %u", bmRequestType);
-        SH1107_drawString(0, 1, 1, "bRequest: %u", bRequest);
-        SH1107_drawString(0, 2, 1, "wValue: %u (bD)", wValue);
-        SH1107_drawString(0, 3, 1, "wIndex: %u", wIndex);
-        SH1107_drawString(0, 4, 1, "wLength: %u", wLength);
+        */
+        if (!unknownPacket) {
+            SH1107_drawString(0, 0, 1, "bmRequestType: %u   ", bmRequestType);
+            SH1107_drawString(0, 1, 1, "bRequest: %u   ", bRequest);
+            SH1107_drawString(0, 2, 1, "wValue: %u (bD)  ", wValue);
+            SH1107_drawString(0, 3, 1, "wIndex: %u   ", wIndex);
+            SH1107_drawString(0, 4, 1, "wLength: %u   ", wLength);
+        }
 
 
         // send device descriptor
         if (bRequest == GET_DESCRIPTOR) { // bmRequestType == 128 && ...
             // host sent GET_DESCRIPTOR, requesting only (wLength/8) bytes of the descriptor, 
             // of type (wValue >> 8)
-            uint8_t descLen; // = sizeof(udDeviceDescriptor);
+            uint16_t descLen; // = sizeof(udDeviceDescriptor);
             const uint8_t *descriptor;
             uint16_t requestLen = wLength > 512 ? 512 : wLength;
-            uint8_t bytesSent = 0;
+            uint16_t bytesSent = 0;
             switch (wValue) {
                 case 0x0100: // getDescriptor(device)
                     descriptor = udDeviceDescriptor;
@@ -313,12 +213,13 @@ ISR(USB_COM_vect) {
                 default: // Unknown bDescriptorType
                     UECONX |= (1 << STALLRQ);
                     cli();
+                    unknownPacket = 1;
                     SH1107_drawString(0, 15, 1, "STALL, unk wVal %u", wValue);
                     break;
             }
-            while(!(UEINTX & (1 << TXINI)));
             descLen = requestLen > descLen ? descLen : requestLen;
             while (descLen > 0) {
+                while(!(UEINTX & (1 << TXINI))); // wow
                 uint8_t packetLen = descLen > UD_EP0_SIZE ? UD_EP0_SIZE : descLen;
                 for (uint8_t i = 0; i < packetLen; i++) {
                     UEDATX = pgm_read_byte(descriptor + bytesSent++);
@@ -338,25 +239,87 @@ ISR(USB_COM_vect) {
         }
 
         if (bRequest == SET_CONFIGURATION) {
-            /*
-            Host sent a configuration request for endpoint wValue,
-            specified by the low byte in wValue.
-            */
-            UEINTX &= ~(1 << TXINI); //handshake
-            UENUM = wValue;
-            UECONX = (1 << EPEN);
-            UECFG0X = 0b11000001; // in, interrupt
-            UECFG1X = 0b00110010; // One Bank: 64B, Allocate
-            if (!(UESTA0X & (1 << CFGOK))) {
-                cli();
-                _blink(100);
+            if (bmRequestType == 0 && !udCfgStatus) {
+                /*
+                Host sent a configuration request for endpoint wValue,
+                specified by the low byte in wValue.
+                bmRequestType: 0
+                bRequest: 9
+                wValue: 1
+                wIndex: 0
+                wLength: 0
+                */
+                UEINTX &= ~(1 << TXINI); //handshake
+               
+                // ep1
+                UENUM = 1; // = wValue
+                UECONX = (1 << EPEN);
+                UECFG0X = 0b11000001; // interrupt, in
+                UECFG1X = 0b00110010; // One Bank: 64B, Allocate
+                if (!(UESTA0X & (1 << CFGOK))) {
+                    cli();
+                    _blink(100);
+                    return;
+                }
+                
+                // ep2
+                UENUM = 2;
+                UECONX = (1 << EPEN);
+                UECFG0X = 0b11000000; // interrupt, out
+                UECFG1X = 0b00110010; // One Bank: 64B, Allocate
+                if (!(UESTA0X & (1 << CFGOK))) {
+                    cli();
+                    _blink(100);
+                    return;
+                }
+                
+                UERST = 0x7E; // 0b01111110
+                UERST = 0;
+                
+                udCfgStatus = 1;
+                SH1107_drawString(0, 6, 1, "udConfigured", 0);
+                //unknownPacket = 1;
                 return;
             }
-            UERST = 0x7E; // 0b01111110
-            UERST = 0;
-            udCfgStatus = 1;
-            SH1107_drawString(0, 6, 1, "udConfigured", 0);
-            return;
+            if (bmRequestType == 33 && wValue == 0x204 && udCfgStatus) {
+                /*
+                PID Device Control Request (actuators)
+
+                bmRequestType: 33
+                bRequest: 9
+                wValue: 516 or 0x0204
+                wIndex: 0
+                wLength: 2
+                if (UEINTX & (1 << RXOUTI)) {
+                    SH1107_drawString(0,8,1,"pooper",0);
+                }
+                */
+                UEINTX &= ~(1 << RXOUTI);
+                UEINTX &= ~(1 << TXINI);
+
+                uint8_t reportID = UEDATX;
+                uint8_t dcControl = UEDATX;
+
+                UEINTX &= ~(1 << FIFOCON);
+
+                switch (dcControl) {
+                case 0x01: // DC Enable Actuators
+                    break;
+                case 0x02: // DC Disable Actuators
+                    break;
+                case 0x03: // DC Stop All Effects
+                    break;
+                case 0x04: // DC Reset
+                    // Clear effect state, zero RAM pool, re-enable actuators
+                    break;
+                case 0x05: // DC Pause
+                    break;
+                case 0x06: // DC Continue
+                    break;
+                }
+
+                return;
+            }
         }
         
         if (bRequest == SET_IDLE) {
@@ -368,8 +331,31 @@ ISR(USB_COM_vect) {
             UEINTX &= ~(1 << TXINI);
             return;
         }
+        
+        if (wIndex == 0) {
+            /*
+            wValue = 774 Report Type: 3 (feature), Report ID: 6
+            wIndex = 0   Interface: 0
+            wLength = 11 Report Len: 11
+            */
+            if (bmRequestType == 0xA1) {
+                if (bRequest == 0x01) {
+                    //const uint8_t *descriptor;
+                    switch (wValue) {
+                        case 0x306: // 774
+                            while(!(UEINTX & (1 << TXINI)));
+                            for (uint8_t i = 0; i < sizeof(udPIDPoolReport); i++) {
+                                UEDATX = pgm_read_byte(udPIDPoolReport + i);
+                                SH1107_drawString(0,8,1,"%u",i);
+                            }
+                            UEINTX &= ~(1 << TXINI);
+                            return;
+                    }
+                }
+            }
+        }
     }
     UECONX |= (1 << STALLRQ);
-    cli();
+    unknownPacket = 1;
     SH1107_drawString(0, 15, 1, "unkown", 0);
 }
