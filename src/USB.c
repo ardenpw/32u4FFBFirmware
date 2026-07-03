@@ -35,13 +35,32 @@ int16_t count = 0;
 uint8_t reportRDY = 0;
 uint8_t unknownPacket = 0;
 uint8_t sofTick = 0;
+static uint8_t buf[64];
+uint8_t inputFlags = 1;
+/*
+7:
+6:
+5:
+4:
+3:
+2:
+1: PID Device Control Report
+0: Input Report
+*/
 
 typedef struct {
     uint8_t reportID;
     int16_t steering;
-} data;
+} HIDInputReport;
 
-data pendRept;
+typedef struct {
+    uint8_t reportID;
+    uint8_t effectBlockIndex;
+    uint8_t state;
+} HIDPIDStateReport;
+
+HIDInputReport pendHIDInRept;
+HIDPIDStateReport pendHIDStateInRept;
 
 void prepUSBReport(void) {
     if (!udCfgStatus) { return; }
@@ -55,54 +74,65 @@ void prepUSBReport(void) {
     static const uint32_t encoderMid = (encoderMax >> 1);
     
     cli(); // dissable interrupts so we get a non-malformed data struct
-    
-    curr = (MT6835_burstRead() >> 11);
-    delta = (int32_t)(curr - last);
-    
-    if (delta > (int32_t)encoderMid) {
-        total += (encoderMax + 1);
-    }
-    else if (delta < (int32_t)-encoderMid) {
-        total -= (encoderMax + 1);
-    }
-    
-    total -= delta;
-    last = curr;
-    /*
-    2520 degrees over 16b equates to 9362pts/rev. 3.5 revolutions in each direction
-    */
-    output = (int16_t)(MIN(32767, MAX(-32768, ((int64_t)total * 9362) / encoderMax)));
-    //output = (int16_t)(((int64_t)total * 9362) / encoderMax);
-    
-    pendRept.reportID = 1;
-    pendRept.steering = output;
-    reportRDY = 1;
 
+    if (inputFlags & (1 << 1)) {
+        pendHIDStateInRept.reportID = 2;
+        pendHIDStateInRept.effectBlockIndex = 1;
+        pendHIDStateInRept.effectBlockIndex &= ~(1 << 7); // set bit 7 to 0 for RAM. 
+                                                          //setting to 1 already does this but whatever
+        pendHIDStateInRept.state &= ~(1 << 0);
+        pendHIDStateInRept.state &= ~(1 << 0);
+        pendHIDStateInRept.state &= ~(1 << 0);
+        pendHIDStateInRept.state &= ~(1 << 0);
+        pendHIDStateInRept.state &= ~(1 << 0);
+        pendHIDStateInRept.state &= ~(1 << 0);
+        reportRDY = 1;
+    } 
+    else {
+        curr = (MT6835_burstRead() >> 11);
+        delta = (int32_t)(curr - last);
+        
+        if (delta > (int32_t)encoderMid) {
+            total += (encoderMax + 1);
+        }
+        else if (delta < (int32_t)-encoderMid) {
+        total -= (encoderMax + 1);
+        }
+        
+        total -= delta;
+        last = curr;
+        /*
+        2520 degrees over 16b equates to 9362pts/rev. 3.5 revolutions in each direction
+        */
+        output = (int16_t)(MIN(32767, MAX(-32768, ((int64_t)total * 9362) / encoderMax)));
+        //output = (int16_t)(((int64_t)total * 9362) / encoderMax);
+        
+        pendHIDInRept.reportID = 1;
+        pendHIDInRept.steering = output;
+        reportRDY = 1;
+    }
+    
     sei();
 }
-/*
-void ep1RDY(void) {
-    UENUM = 1;
-    if (UENUM != 1) { return; }
-    if (!reportRDY) { return; }
-    if (!(UEINTX & (1 << RWAL))) { return; }
-    UEDATX = pendRept.reportID;
-    UEDATX = (pendRept.steering & 0xFF);
-    UEDATX = (pendRept.steering >> 8);
-    UEINTX &= ~(1 << FIFOCON); // push fifo
-    reportRDY = 0;
-} 
-*/
 
 void ep1RDY(void) {
+    // TODO: implement delay from SET_IDLE
     UENUM = 1;
     if (UENUM != 1) { return; }
     if (!reportRDY) { return; }
     if (!(UEINTX & (1 << RWAL))) { return; }
     UEINTX &= ~(1 << TXINI);
-    UEDATX = pendRept.reportID;
-    UEDATX = (pendRept.steering & 0xFF);
-    UEDATX = (pendRept.steering >> 8);
+    if (inputFlags & (1 << 1)) {
+        UEDATX = pendHIDStateInRept.reportID;
+        UEDATX = pendHIDStateInRept.effectBlockIndex;
+        UEDATX = pendHIDStateInRept.state;
+        inputFlags &= ~(1 << 1);
+    }
+    else {
+        UEDATX = pendHIDInRept.reportID;
+        UEDATX = (pendHIDInRept.steering & 0xFF);
+        UEDATX = (pendHIDInRept.steering >> 8);
+    }
     while (!(UEINTX & (1 << RWAL)));
     UEINTX &= ~(1 << FIFOCON); // push fifo
     reportRDY = 0;
@@ -111,14 +141,19 @@ void ep1RDY(void) {
 void ep2Dump(void) {
     UENUM = 2;
     if (!(UEINTX & (1 << RXOUTI))) { return; }  // no packet waiting
-
-    /*
-    uint8_t byteCount = UEBCLX;  // bytes available in bank
+    
+    uint8_t byteCount = UEBCLX;
+    
     for (uint8_t i = 0; i < byteCount; i++) {
-        volatile uint8_t discard = UEDATX;       // drain each byte
+        buf[i] = UEDATX;
     }
-    */
-    SH1107_drawString(0,10,1,"out x%u",++count);
+    
+    if (buf[0] == 0x06) {
+        inputFlags |= (1 << 1);
+    }
+    
+    
+    SH1107_drawString(0,10,1,"%u",++count);
 
     UEINTX &= ~(1 << RXOUTI);   // acknowledge receipt
     UEINTX &= ~(1 << FIFOCON);  // release bank back to SIE
@@ -352,7 +387,7 @@ ISR(USB_COM_vect) {
         }
 
         if (bRequest == GET_REPORT) {
-            if (wValue == 0x030C) {
+            if (wValue == 0x030A) {
                 // Type: Feature, Report ID: (12)
                 // This is the PID Pool Report
                 while(!(UEINTX & (1 << TXINI)));
@@ -362,7 +397,7 @@ ISR(USB_COM_vect) {
                 UEINTX &= ~(1 << TXINI);
                 return;
             }
-        }
+        }   
     }
 
     UECONX |= (1 << STALLRQ);

@@ -1,8 +1,7 @@
 #include "include.h"
 int main() {
     SH1107_init();
-    usbInit(); 
-    uint8_t count = 0;
+    usbInit();
     
     while(1) { 
         prepUSBReport(); 

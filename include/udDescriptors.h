@@ -64,8 +64,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x95, 0x01, //          Report Count: (1)
     0x81, 0x02, //          Input Report (Data,Var,Abs)
     /*
-    0x09, 0x21, //                  Usage: Set Effect Report
-    // PID Output   
+    // PID Stuff   
     // Driver managed
     // NOTE: Each new Collection (bold usages) should have its own report ID.
     //       Regular usages dont need their own report ID, as they are part of 
@@ -79,10 +78,47 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     whether firmware honors it or ignores it
     */
     //
+    // ???????????????????????????????????????????????????
     0x05, 0x0F, //          Usage Page: Physical Input Device
+    0x09, 0x92, //          Usage: PID State Report
+    0xA1, 0x02, //          Collection: Logical 
+    0x85, 0x02, //              Report ID: (2)
+    
+    0x09, 0x22, //              Usage: Effect Block Index
+    0x15, 0x01, //              Logical Minimum: (1)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x07, //              Report Size: (7)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+
+    0x09, 0x24, //              Usage: ROM Flag
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x01, //              Report Size: (1)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs) 
+    
+    0x09, 0x94, //              Usage: Effect Playing
+    0x09, 0x9F, //              Usage: Device Paused
+    0x09, 0xA0, //              Usage: Actuators Enabled
+    0x09, 0xA4, //              Usage: Safety Switch
+    0x09, 0xA5, //              Usage: Actuator Overide Switch
+    0x09, 0xA6, //              Usage: Actuator Power
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x01, //              Report Size: (1)
+    0x95, 0x06, //              Report Count: (6)
+    0x81, 0x02, //              Input: (Data,Var,Abs) 
+    
+                //              PAD
+    0x75, 0x02, //              Report Size: (2)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x03, //              Input: (Const,Var,Abs)
+    0xC0, //                End Collection: Logical (PID State Report)
+
     0x09, 0x21, //          Usage: Set Effect Report
     0xA1, 0x02, //          Collection: Logical
-    0x85, 0x02, //              Report ID: (2)
+    0x85, 0x03, //              Report ID: (3)
     
     0x09, 0x22, //              Usage: Effect Block Index
     0x15, 0x01, //              Logical Minimum: (1)
@@ -91,13 +127,6 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
     
-    0x09, 0x24, //              Usage: ROM Flag
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x00, //              Report Size: (8)
-    0x95, 0x00, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-
     0x09, 0x25, //              Usage: Effect Type
     0xA1, 0x02, //              Collection: Logical
     0x09, 0x26, //                  Usage: ET Constant-Force
@@ -107,52 +136,34 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x95, 0x01, //                  Report Count: (1)
     0x91, 0x00, //                  Output: (Data,Arr,Abs)
     0xC0, //                    End Collection: Logical (Effect Type)
-
+    
     0x09, 0x50, //              Usage: Duration
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (NULL)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0x0D, //              Unit Exponent: (-3)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-
     0x09, 0x51, //              Usage: Sample Period
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximum: (0)
-    //0x66, 0x03, 0x10, //    Unit: (Eng Lin:Time)
-    //0x55, 0x0D, //          Unit Exponent: (-3)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (0)
-    0x55, 0x00, //              Unit Exponent: (0)
-
-    0x09, 0x52, //              Usage: Gain
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-
-    0x09, 0x53, //              Usage: Trigger Button
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0xFF, //              Logical Maximum: (NULL)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-
     0x09, 0x54, //              Usage: Trigger Repeat Interval
     0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0xFF, //              Logical Maximum: (NULL)
+    0x27, 0xFF, 0xFF, 0, 0, //  Logical Maximum: (65535)
     0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0x0D, //              Unit Exponent: (-3)
+    0x55, 0xFD, //              Unit Exponent: (-3)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x03, //              Report Count: (3)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //        Unit: (None)
+    0x55, 0x00, //              Unit Exponent: (0)
+    
+    0x09, 0x52, //              Usage: Gain
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0x10, 0x27, //        Logical Maximim: (10000)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x53, //              Usage: Trigger Button
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x00, //              Logical Maximum: (NULL)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (0)
-    0x55, 0x00, //              Unit Exponent: (0)
-
+        
     0x09, 0x55, //              Usage: Axes Enable
     0xA1, 0x02, //              Collection: Logical
     0x05, 0x01, //                  Usage Page: Generic Desktop
@@ -166,7 +177,314 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x91, 0x02, //                      Output: (Data,Var,Abs)
     0xC0, //                        End Collection: Physical (Pointer)
     0xC0, //                    End Collection: Logical (Axes Enable)
+    
+    0x05, 0x0F, //              Usage Page: Physical Input Device
+    0x09, 0x56, //              Usage: Direction Enable
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x00, //              Logical Maximum: (0) 
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x57, //              Usage: Direction
+    0xA1, 0x02, //              Collection: Logical
+    0x05, 0x01, //                  Usage Page: Generic Desktop
+    0x09, 0x01, //                  Usage: Pointer
+    0xA1, 0x00, //                  Collection: Physical
+    0x09, 0x35, //                      Usage: Rz
+    0x16, 0xF0, 0xD8, //                Logical Minimum: (-10000)
+    0x26, 0x10, 0x27, //                Logical Maximum: (10000)
+    0x66, 0x14, 0x00, //                Uint: (Eng Rot:Angular Pos) 
+    0x75, 0x10, //                      Report Size: (16)
+    0x95, 0x01, //                      Report Count: (1)
+    0x91, 0x02, //                      Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //                Unit: (0)
+    0xC0, //                        End Collection: Physical (Pointer)
+    0xC0, //                    End Collection: Logical (Direction)
+    
+    0x05, 0x0F, //              Usage Page: Physical Input Device
+    0x09, 0xA7, //              Usage: Start Delay
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x27, 0xFF, 0xFF, 0x00, 0x00,//Logical Maximum: (65535)
+    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
+    0x55, 0xFD, //              Unit Exponent: (-3)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //        Unit: (None)
+    0x55, 0x00, //              Unit Exponent: (0)
+    
+    0x09, 0x58, //              Usage: Type Specific Block Offset
+    0xA1, 0x02, //              Collection: Logical
+    0x0B, 0x01, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 1)
+    0x0B, 0x02, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 2)
+    0x15, 0x00, //                  Logical Minimum: (0)
+    0x26, 0xFD, 0x7F, //            Logical Maximum: (32765)
+    0x75, 0x10, //                  Report Size: (16)
+    0x95, 0x02, //                  Report Count: (2)
+    0x91, 0x02, //                  Output: (Data,Var,Abs)
+    0xC0, //                    End Collection: Logical (Type Specific Block Offset)
+    0xC0, //                End Collection: Logical (Set Effect Report)
 
+    0x09, 0x73, //          Usage: Set Constant-Force Report
+    0xA1, 0x02, //          Collection: logical
+    0x85, 0x04, //              Report ID: (4)
+    
+    0x09, 0x22,                    /*     USAGE (Effect Block Index) */
+    0x15, 0x01,
+    0x25, 0x01,
+    0x75, 0x08,
+    0x95, 0x01,
+    0x91, 0x02,
+    
+    0x09, 0x70, //              Usage: Magnitude
+    0x16, 0xF0, 0xD8, //        Logical Minimum: (-10000)
+    0x26, 0x10, 0x27, //        Logical Maximum: (10000)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (Set Constant-Force Report)
+
+    0x09, 0x77, //          Usage: Effect Operation Report
+    0xA1, 0x02, //          Collection: Logical
+    0x85, 0x05, //              Report ID: (5)
+
+    0x09, 0x22,                    /*     USAGE (Effect Block Index) */
+    0x15, 0x01,
+    0x25, 0x01,
+    0x75, 0x08,
+    0x95, 0x01,
+    0x91, 0x02,
+    
+    0x09, 0x78, //              Usage: Effect Opperation
+    0xA1, 0x02, //              Collection: Logical
+    0x09, 0x79, //                  Usage: OP Effect Start
+    0x09, 0x7A, //                  Usage: OP Effect Start Solo
+    0x09, 0x7B, //                  Usage: OP Effect Stop
+    0x15, 0x01, //                  Logical Minimum: (1)
+    0x25, 0x03, //                  Logical Maximum: (3)
+    0x75, 0x08, //                  Report Size: (8)
+    0x95, 0x01, //                  Report Count: (1)
+    0x91, 0x00, //                  Output: (Data,Arr,Abs)
+    0xC0, //                    End Collection: Logical (Effect Opperation)
+    
+    0x09, 0x7C, //              Usage: Loop Count
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (Effect Operation Report)
+
+    0x09, 0x95, //          Usage: PID Device Control Report
+    0xA1, 0x02, //          Collection: Logical
+    0x85, 0x06, //              Report ID: (6)
+    
+    0x09, 0x96, //              Usage: PID Device Control
+    0xA1, 0x02, //              Collection: Logical
+    0x09, 0x97, //                  Usage: DC Enable Actuators
+    0x09, 0x98, //                  Usage: DC Disable Actuators
+    0x09, 0x99, //                  Usage: DC Stop All Effects
+    0x09, 0x9A, //                  Usage: DC Reset
+    0x09, 0x9B, //                  Usage: DC Pause
+    0x09, 0x9C, //                  Usage: DC Continue
+    0x15, 0x01, //                  Logical Minimum: (1)
+    0x25, 0x06, //                  Logical Maximum: (6)
+    0x75, 0x08, //                  Report Size: (8)
+    0x95, 0x01, //                  Report Count: (1)
+    0x91, 0x00, //                  Output: (Data,Arr,Abs)
+    0xC0, //                    End Collection: Logical (PID Device Control)
+    0xC0, //                End Collection: Logical (PID Device Control Report)
+
+    0x09, 0x7D, //          Usage: Device Gain Report
+    0xA1, 0x02, //          Collection: logical
+    0x85, 0x07, //              Report ID: (7)
+    
+    0x09, 0x7E, //              Usage: Device Gain
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0x10, 0x27, //        logical Maximum: (10000)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (Device Gain Report)
+
+    0x09, 0xAB, //          Usage: Create New Effect Parameter Block Report
+    0xA1, 0x02, //          Collection: Logical 
+    0x85, 0x08, //              Report ID: (8)
+    
+    0x09, 0x25, //              Usage: Effect Type
+    0xA1, 0x02, //              Collection: Logical
+    0x09, 0x26, //                  Usage: ET Constant-Force
+    0x15, 0x01, //                  Logical Minimum: (1)
+    0x25, 0x01, //                  Logical Maximum: (1)
+    0x75, 0x08, //                  Report Size: (8)
+    0x95, 0x01, //                  Report Count: (1)
+    0xB1, 0x00, //                  Feature: (Data,Arr,Abs)
+    0xC0, //                    End Collection: Logical (Effect Type)
+    
+    0x05, 0x01, //              Usage Page: (Generic Desktop)
+    0x09, 0x3B, //              Usage: Byte Count
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    0x05, 0x0F, //              Usage Page: Physical Interface Device
+    0xC0, //                End Collection: Logical (Create New Effect Parameter Block Report)
+
+    0x09, 0x89,                    /*   USAGE (PID Block Load Report) */
+    0xA1, 0x02,
+    0x85, 0x09,
+
+    0x09, 0x22,                    /*   USAGE (Effect Block Index) */
+    0x15, 0x01,
+    0x25, 0x01,
+    0x75, 0x08,
+    0x95, 0x01,
+    0xB1, 0x02,
+
+    0x09, 0x8B,                    /*   USAGE (Block Load Status) */
+    0xA1, 0x02,
+    0x09, 0x8C,                    /*     USAGE (Block Load Success) */
+    0x09, 0x8D,                    /*     USAGE (Block Load Full) */
+    0x09, 0x8E,                    /*     USAGE (Block Load Error) */
+    0x15, 0x01,
+    0x25, 0x03,
+    0x75, 0x08,
+    0x95, 0x01,
+    0xB1, 0x00,                    /*     FEATURE (Data,Ary,Abs) */
+    0xC0,
+
+    0x09, 0xAC,                    /*   USAGE (RAM Pool Available) */
+    0x15, 0x00,
+    0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
+    0x75, 0x10,
+    0x95, 0x01,
+    0xB1, 0x02,
+    0xC0,
+
+    0x09, 0x7F, //          Usage: PID Pool Report
+    0xA1, 0x02, //          Collection: Logical
+    0x85, 0x0A, //              Report ID: (10)
+    
+    0x09, 0x80, //              Usage: Ram Pool Size
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
+    0x75, 0x10, //              Report Size: (16)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    
+    0x09, 0x83, //              Usage: Simultaneous Effects Max
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    
+    0x09, 0xA9, //              Usage: Device Managed Pool
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    
+    0x09, 0xAA, //              Usage: Shared Parameter Blocks
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (PID Pool Report)
+
+    /*
+    0x05, 0x0F, //          Usage Page: Physical Input Device
+    0x09, 0x21, //          Usage: Set Effect Report
+    0xA1, 0x02, //          Collection: Logical
+    0x85, 0x02, //              Report ID: (2)
+    
+    0x09, 0x22, //              Usage: Effect Block Index
+    0x15, 0x01, //              Logical Minimum: (1)
+    0x25, 0x28, //              Logical Maximum: (40)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x24, //              Usage: ROM Flag
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximum: (1)
+    0x75, 0x00, //              Report Size: (8)
+    0x95, 0x00, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x25, //              Usage: Effect Type
+    0xA1, 0x02, //              Collection: Logical
+    0x09, 0x26, //                  Usage: ET Constant-Force
+    0x15, 0x01, //                  Logical Minimum: (1)
+    0x25, 0x01, //                  Logical Minimum: (1)
+    0x75, 0x08, //                  Report Size: (8)
+    0x95, 0x01, //                  Report Count: (1)
+    0x91, 0x00, //                  Output: (Data,Arr,Abs)
+    0xC0, //                    End Collection: Logical (Effect Type)
+    
+    0x09, 0x50, //              Usage: Duration
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //        Logical Maximum: (NULL)
+    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
+    0x55, 0x0D, //              Unit Exponent: (-3)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x51, //              Usage: Sample Period
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x00, //              Logical Maximum: (0)
+    //0x66, 0x03, 0x10, //    Unit: (Eng Lin:Time)
+    //0x55, 0x0D, //          Unit Exponent: (-3)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //        Unit: (0)
+    0x55, 0x00, //              Unit Exponent: (0)
+    
+    0x09, 0x52, //              Usage: Gain
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x53, //              Usage: Trigger Button
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0xFF, //              Logical Maximum: (NULL)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    
+    0x09, 0x54, //              Usage: Trigger Repeat Interval
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0xFF, //              Logical Maximum: (NULL)
+    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
+    0x55, 0x0D, //              Unit Exponent: (-3)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //        Unit: (0)
+    0x55, 0x00, //              Unit Exponent: (0)
+    
+    0x09, 0x55, //              Usage: Axes Enable
+    0xA1, 0x02, //              Collection: Logical
+    0x05, 0x01, //                  Usage Page: Generic Desktop
+    0x09, 0x01, //                  Usage: Pointer
+    0xA1, 0x00, //                  Collection: Physical
+    0x09, 0x35, //                      Usage: Rz
+    0x15, 0x00, //                      Logical Minimum: (0)
+    0x25, 0x01, //                      Logical Maximum: (1)
+    0x75, 0x08, //                      Report Size: (8)
+    0x95, 0x01, //                      Report Count: (1)
+    0x91, 0x02, //                      Output: (Data,Var,Abs)
+    0xC0, //                        End Collection: Physical (Pointer)
+    0xC0, //                    End Collection: Logical (Axes Enable)
+    
     0x05, 0x0F, //              Usage Page: Physical Input Device
     0x09, 0x57, //              Usage: Direction
     0xA1, 0x02, //              Collection: Logical
@@ -183,7 +501,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x66, 0x00, 0x00, //                Unit: (0)
     0xC0, //                        End Collection: Physical (Pointer)
     0xC0, //                    End Collection: Logical (Direction)
-
+    
     0x05, 0x0F, //              Usage Page: Physical Input Device
     0x09, 0xA7, //              Usage: Start Delay
     0x15, 0x00, //              Logical Minimum: (0)
@@ -191,7 +509,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
-
+    
     0x09, 0x58, //              Usage: Type Specific Block Offset
     0xA1, 0x02, //              Collection: Logical
     0x0B, 0x01, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 1)
@@ -199,7 +517,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x15, 0x00, //                  Logical Minimum: (0)
     0x26, 0xFD, 0x7F, //            Logical Maximum: (32765)
     0x75, 0x10, //                  Report Size: (16)
-    0x95, 0x01, //                  Report Count: (1)
+    0x95, 0x02, //                  Report Count: (2)
     0x91, 0x02, //                  Output: (Data,Var,Abs)
     0xC0, //                    End Collection: Logical (Type Specific Block Offset)
     0xC0, //                End Collection: Logical (Set Effect Report)
@@ -309,7 +627,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0xC0, //                End Collection: Logical (Device Gain Report)
     
     0x09, 0xAB, //          Usage: Create New Effect Parameter Block Report
-    0xA1, 0x01, //          Collection: Logical 
+    0xA1, 0x02, //          Collection: Logical 
     0x85, 0x07, //              Report ID: (7)
     
     0x09, 0x25, //              Usage: Effect Type
@@ -338,7 +656,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     
     0x09, 0x22, //              Usage: Effect Parameter Block Index
     0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x01, //              Logical Maximum: (1)
+    0x25, 0x28, //              Logical Maximum: (40)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0xB1, 0x02, //              Feature: (Data,Var,Abs)
@@ -369,7 +687,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     
     0x09, 0x22, //              Usage: Effect Block Index
     0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x01, //              Logical Maximum: (1)
+    0x25, 0x28, //              Logical Maximum: (40)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
@@ -381,7 +699,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     
     0x09, 0x22, //              Usage: Effect Block Index
     0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x7F, //              Logical Maximum: (127)
+    0x25, 0x28, //              Logical Maximum: (40)
     0x75, 0x07, //              Report Size: (7)
     0x81, 0x02, //              Input: (Data,Var,Abs)
     0x09, 0x24, //              Usage: ROM Flag
@@ -391,19 +709,46 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x95, 0x01, //              Report Count: (1)
     0x81, 0x02, //              Input: (Data,Var,Abs) 
     
+    // TODO: THIS IS NOT OPTIMAL AT ALL!!!!!!!!!!! PACK BETTER
     0x09, 0x94, //              Usage: Effect Playing
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximim: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+    
     0x09, 0x9F, //              Usage: Device Paused
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximim: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+    
     0x09, 0xA0, //              Usage: Actuators Enabled
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximim: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+    
     0x09, 0xA4, //              Usage: Safety Switch
+    0x15, 0x00, //              Logical Minimum: (0)
+    0x25, 0x01, //              Logical Maximim: (1)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+    
     0x09, 0xA5, //              Usage: Actuator Overide Switch
     0x15, 0x00, //              Logical Minimum: (0)
     0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x06, //              Report Size: (6)
-    0x81, 0x02, //              Input: (Data,Var,Abs) 
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x81, 0x02, //              Input: (Data,Var,Abs)
+    
     0x09, 0xA6, //              Usage: Actuator Power
     0x15, 0x01, //              Logical Minimum: (-1)
     0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x02, //              Report Size: (2)
+    0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0x81, 0x02, //              Input: (Data,Var,Abs) 
     0xC0, //                End Collection: Logical (PID State Report)
@@ -427,39 +772,40 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x91, 0x00, //                  Output: (Data,Arr,Abs)
     0xC0, //                    End Collection: Logical (PID Device Control)
     0xC0, //                End Collection: Logical (PID Device Control Report)
-
+    
     0x09, 0x7F, //          Usage: PID Pool Report
     0xA1, 0x02, //          Collection: Logical
     0x85, 0x0C, //              Report ID: (12)
-
+    
     0x09, 0x80, //              Usage: Ram Pool Size
     0x15, 0x00, //              Logical Minimum: (0)
     0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
     0x75, 0x10, //              Report Size: (16)
     0x95, 0x01, //              Report Count: (1)
     0xB1, 0x02, //              Feature: (Data,Var,Abs)
-
+    
     0x09, 0x83, //              Usage: Simultaneous Effects Max
     0x15, 0x00, //              Logical Minimum: (0)
     0x26, 0xFF, 0x00, //        Logical Maximum: (255)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
     0xB1, 0x02, //              Feature: (Data,Var,Abs)
-
+    
     0x09, 0xA9, //              Usage: Device Managed Pool
     0x15, 0x00, //              Logical Minimum: (0)
     0x25, 0x01, //              Logical Maximum: (1)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x03, //              Feature: (Const,Var,Abs)
-
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    
     0x09, 0xAA, //              Usage: Shared Parameter Blocks
     0x15, 0x00, //              Logical Minimum: (0)
     0x25, 0x01, //              Logical Maximum: (1)
     0x75, 0x08, //              Report Size: (8)
     0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x03, //              Feature: (Const,Var,Abs)
+    0xB1, 0x02, //              Feature: (Data,Var,Abs)
     0xC0, //                End Collection: Logical (PID Pool Report)
+    */
     
     0xC0 //             End Collection: Application (Top Level)
 };
@@ -534,34 +880,36 @@ static const uint8_t udStringManufacturerDescriptor[] PROGMEM = {
 static const uint8_t udStringDeviceDescriptor[] PROGMEM = {
     42, // bLength
     0x03, // bDescriptorType (string)
-    0x54, 0x00, 
-    0x73, 0x00,
-    0x20, 0x00, 
-    0x69, 0x00, 
+    0x41, 0x00, 
+    0x72, 0x00, 
+    0x64, 0x00, 
+    0x65, 0x00, 
+    0x6E, 0x00, 
+    0x27, 0x00, 
     0x73, 0x00, 
     0x20, 0x00, 
-    0x66, 0x00, 
-    0x75, 0x00, 
-    0x63, 0x00, 
-    0x6B, 0x00, 
+    0x57, 0x00, 
+    0x68, 0x00, 
     0x65, 0x00, 
-    0x64, 0x00, 
+    0x65, 0x00, 
+    0x6C, 0x00, 
+    0x62, 0x00, 
+    0x61, 0x00, 
+    0x73, 0x00, 
+    0x65, 0x00, 
     0x20, 0x00, 
-    0x66, 0x00, 
-    0x72, 0x00, 
-    0x20, 0x00, 
-    0x4C, 0x00, 
-    0x4D, 0x00, 
-    0x41, 0x00, 
-    0x4F, 0x00
+    0x56, 0x00, 
+    0x31, 0x00, 
+    0x2E, 0x00, 
+    0x30, 0x00
 };
 
 static const uint8_t udPIDPoolReport[] PROGMEM = {
-    0x0C, // Report ID: (12)
-    0x00, 0x02, // Ram Pool Size: (512)
-    0xFF, // Simultaneous effects max: (255)
+    0x0A, // Report ID: (12)
+    0x40, 0x00, // Ram Pool Size: (64)
+    0x01, // Simultaneous effects max: (1)
     0x01, // Device Managed Pool
-    0x01, // Shared Parameter Block
+    0x00, // Shared Parameter Block
 };
 
 #endif // #ifndef udDescriptors.h
