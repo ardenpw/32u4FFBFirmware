@@ -10,6 +10,9 @@ void _blink(uint8_t delayMS) {
 void usbInit(void) {
     cli();
 
+    UERST = 127;
+    UDCON |= (1 << DETACH);
+
     DDRB |= (1 << PB0);
 
     UHWCON |= (1 << UVREGE);
@@ -50,7 +53,8 @@ uint8_t inputFlags = 1;
 
 typedef struct {
     uint8_t reportID;
-    int16_t steering;
+    int16_t x;
+    int16_t y;
 } HIDInputReport;
 
 typedef struct {
@@ -108,7 +112,8 @@ void prepUSBReport(void) {
         //output = (int16_t)(((int64_t)total * 9362) / encoderMax);
         
         pendHIDInRept.reportID = 1;
-        pendHIDInRept.steering = output;
+        pendHIDInRept.x = output;
+        pendHIDInRept.y = 0;
         reportRDY = 1;
     }
     
@@ -130,8 +135,10 @@ void ep1RDY(void) {
     }
     else {
         UEDATX = pendHIDInRept.reportID;
-        UEDATX = (pendHIDInRept.steering & 0xFF);
-        UEDATX = (pendHIDInRept.steering >> 8);
+        UEDATX = (pendHIDInRept.x & 0xFF);
+        UEDATX = (pendHIDInRept.x >> 8);
+        UEDATX = (pendHIDInRept.y & 0xFF);
+        UEDATX = (pendHIDInRept.y >> 8);
     }
     while (!(UEINTX & (1 << RWAL)));
     UEINTX &= ~(1 << FIFOCON); // push fifo
@@ -159,6 +166,9 @@ void ep2Dump(void) {
     UEINTX &= ~(1 << FIFOCON);  // release bank back to SIE
 }   
 
+ISR(INT3_vect){
+    usbInit();
+}
 
 ISR(USB_GEN_vect) {
     uint8_t flags = UDINT;

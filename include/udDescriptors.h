@@ -34,780 +34,184 @@ static const uint8_t udDeviceDescriptor[] PROGMEM = {
 };
 
 static const uint8_t udHIDReportDescriptor[] PROGMEM = {
-    // Input 
-    /*
-    0x05, 0x01, //      Usage Page: Generic Desktop
-    0x09, 0x04, //      Usage: Joystick
-    0xA1, 0x01, //      Collection: Application
-    0x85, 0x01, //          Report ID 
-
-    0x05, 0x01, //          Usage Page: Generic Desktop
-    0x09, 0x35, //          Usage: Rz
-    0x16, 0x01, 0x80, //    Logical Minimum: (-32767)
-    0x26, 0xFF, 0x7F, //    Logical Maximum: (32767)
-    0x75, 0x10, //          Report Size: (16)b
-    0x95, 0x01, //          Report Count: (1)
-    0x81, 0x02, //          Input Report (Data,Var,Abs)
-    */
+    0x05, 0x01, //  Usage Page: Generic Desktop
+    0x09, 0x04, //  Usage: Joystick
+    0xA1, 0x01, //  Collection: Application
     
-    0x05, 0x01, //      Usage Page: Generic Desktop
-    0x09, 0x04, //      Usage: Joystick
-    0xA1, 0x01, //      Collection: Application
+    0x09, 0x01, //      Usage: Pointer
+    0xA1, 0x00, //      Collection: Physical
     0x85, 0x01, //          Report ID: (1)
-    //0x05, 0x02, //          Usage Page: Simulation Controls
-    //0x09, 0xC8, //          Usage: Steering
-    0x05, 0x01, //          Usage Page: Generic Desktop
-    0x09, 0x35, //          Usage: Rz
+
+    0x09, 0x30, //          Usage: X
+    0x09, 0x31, //          Usage: Y
     0x16, 0x01, 0x80, //    Logical Minimum: (-32767)
     0x26, 0xFF, 0x7F, //    Logical Maximum: (32767)
-    0x75, 0x10, //          Report Size: (16)b
+    0x36, 0x01, 0x80, //    Physical Minimum: (-32767)
+    0x46, 0xFF, 0x7F, //    Physical Maximum: (32767)
+    0x75, 0x10, //          Report Size: (16)
+    0x95, 0x02, //          Report Count: (2)
+    0x81, 0x02, //          Input: (Data,Var,Abs)
+    0xC0, //            End Collection: (Physical)
+
+    // if nothing works. add physical min/maxes to all logical min/maxes
+
+    0x05, 0x0F, //      Usage Page: Physical Interface Device
+    0x09, 0x21, //      Usage: Set Effect Report
+    0xA1, 0x02, //      Collection: Logical
+    0x85, 0x02, //          Report ID: (2)    
+
+    0x09, 0x22, //          Usage: Effect Block Index
+    0x15, 0x00, //          logical Minimum: (0)
+    0x25, 0x28, //          Logical Maximum: (40)
+    0x75, 0x08, //          Report Size: (8)
     0x95, 0x01, //          Report Count: (1)
-    0x81, 0x02, //          Input Report (Data,Var,Abs)
-    /*
-    // PID Stuff   
-    // Driver managed
-    // NOTE: Each new Collection (bold usages) should have its own report ID.
-    //       Regular usages dont need their own report ID, as they are part of 
-    //       the group.
-    //       (Bold, C) Usage -> CL -> Report ID
-    /
-    field name
-    bits
-    range
-    units
-    whether firmware honors it or ignores it
-    */
-    //
-    // ???????????????????????????????????????????????????
-    0x05, 0x0F, //          Usage Page: Physical Input Device
-    0x09, 0x92, //          Usage: PID State Report
-    0xA1, 0x02, //          Collection: Logical 
-    0x85, 0x02, //              Report ID: (2)
-    
-    0x09, 0x22, //              Usage: Effect Block Index
-    0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x07, //              Report Size: (7)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
 
-    0x09, 0x24, //              Usage: ROM Flag
+    // add more effects to this. maybe that will do it...
+    0x09, 0x24, //          Usage: Effect Type
+    0xA1, 0x02, //          Collection: Logical
+    0x09, 0x26, //              Usage: ET Constant-Force
+    0x09, 0x27, //              Usage: ET Ramp
+    0x09, 0x30, //              Usage: ET Square 
+    0x09, 0x31, //              Usage: ET Sine
+    0x09, 0x32, //              Usage: ET Triangle
+    0x09, 0x33, //              Usage: ET Sawtooth Up
+    0x09, 0x34, //              Usage: ET Sawtooth Down
+    0x09, 0x40, //              Usage: ET Spring
+    0x09, 0x41, //              Usage: ET Damper
+    0x09, 0x42, //              Usage: ET Inertia
+    0x09, 0x43, //              Usage: ET Friction
+    0x15, 0x01, //              Logical Minimum: (1)
+    0x25, 0x0B, //              Logical Maximum: (11)
+    0x75, 0x08, //              Report Size: (8)
+    0x95, 0x01, //              Report Count: (1)
+    0x91, 0x00, //              Output: (Data,Arr,Abs)
+    0xC0, //                End Collection: Logical (Effect Type)
+
+    0x09, 0x50, //          Usage: Duration
+    0x09, 0x54, //          Usage: Trigger Repeat Interval
+    0x09, 0x51, //          Usage: Sample Period
+    0x09, 0xA7, //          Usage: Start Delay
+    0x15, 0x00, //          Logical Minimum: (0)
+    0x26, 0xFF, 0x7F, //    Logical Maximum: (32767)
+    0x66, 0x03, 0x10, //    Unit: (Eng Lin:Time)
+    0x55, 0xFD, //          Unit Exponent: (-3)
+    0x75, 0x10, //          Report Size: (16)
+    0x95, 0x04, //          Report Count: (4)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //    Unit: (None)
+    0x55, 0x00, //          Unit Exponent: (0)
+
+    0x09, 0x52, //          Usage: Gain
+    0x15, 0x00, //          Logical Minimum: (0)
+    0x26, 0xFF, 0x00, //    Logical Maximum: (255)
+    0x75, 0x08, //          Report Size: (8)
+    0x95, 0x01, //          Report Count: (1)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
+
+    0x09, 0x53, //          Usage: Trigger Button
+    0x15, 0x01, //          Logical Minimum: (1)
+    0x25, 0x08, //          Logical Maximum: (8)
+    0x75, 0x08, //          Report Size: (8)
+    0x95, 0x01, //          Report Count: (1)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
+    
+    // Axes Enable is overridden by Direction Enable
+    // Actually, what is going on here?
+    0x09, 0x55, //          Usage: Axes Enable
+    0xA1, 0x02, //          Collection: Logical
+    0x05, 0x01, //              Usage Page: Generic Desktop
+    0x09, 0x30, //              Usage: X
     0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
+    0x25, 0x00, //              Logical Maximim: (0)
     0x75, 0x01, //              Report Size: (1)
     0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs) 
-    
-    0x09, 0x94, //              Usage: Effect Playing
-    0x09, 0x9F, //              Usage: Device Paused
-    0x09, 0xA0, //              Usage: Actuators Enabled
-    0x09, 0xA4, //              Usage: Safety Switch
-    0x09, 0xA5, //              Usage: Actuator Overide Switch
-    0x09, 0xA6, //              Usage: Actuator Power
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x01, //              Report Size: (1)
-    0x95, 0x06, //              Report Count: (6)
-    0x81, 0x02, //              Input: (Data,Var,Abs) 
-    
-                //              PAD
-    0x75, 0x02, //              Report Size: (2)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x03, //              Input: (Const,Var,Abs)
-    0xC0, //                End Collection: Logical (PID State Report)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (Axes Enable)
 
-    0x09, 0x21, //          Usage: Set Effect Report
+    0x05, 0x0F, //          Usage Page: Physical Interface Device
+    0x09, 0x56, //          Usage: Direction Enable
+    0x95, 0x01, //          Report Count: (1)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
+    0x95, 0x06, //          Report Count: (6)
+    0x91, 0x03, //          Output: (Const,Var,Abs)
+
+    // add units to this if it doesnt work
+    0x09, 0x57, //          Usage: Direction
     0xA1, 0x02, //          Collection: Logical
-    0x85, 0x03, //              Report ID: (3)
-    
-    0x09, 0x22, //              Usage: Effect Block Index
-    0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x25, //              Usage: Effect Type
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x26, //                  Usage: ET Constant-Force
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x01, //                  Logical Minimum: (1)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Type)
-    
-    0x09, 0x50, //              Usage: Duration
-    0x09, 0x51, //              Usage: Sample Period
-    0x09, 0x54, //              Usage: Trigger Repeat Interval
+    0x0B,0x01,0x00,0x0A,0x00, //Usage Ordinals: Instance 1
+//  0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
     0x15, 0x00, //              Logical Minimum: (0)
-    0x27, 0xFF, 0xFF, 0, 0, //  Logical Maximum: (65535)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0xFD, //              Unit Exponent: (-3)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x03, //              Report Count: (3)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (None)
-    0x55, 0x00, //              Unit Exponent: (0)
-    
-    0x09, 0x52, //              Usage: Gain
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0x10, 0x27, //        Logical Maximim: (10000)
+    0x26, 0xA0, 0x8C, //        Logical Maximum: (36000)
     0x75, 0x10, //              Report Size: (16)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x53, //              Usage: Trigger Button
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximum: (NULL)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-        
-    0x09, 0x55, //              Usage: Axes Enable
-    0xA1, 0x02, //              Collection: Logical
-    0x05, 0x01, //                  Usage Page: Generic Desktop
-    0x09, 0x01, //                  Usage: Pointer
-    0xA1, 0x00, //                  Collection: Physical
-    0x09, 0x35, //                      Usage: Rz
-    0x15, 0x00, //                      Logical Minimum: (0)
-    0x25, 0x01, //                      Logical Maximum: (1)
-    0x75, 0x08, //                      Report Size: (8)
-    0x95, 0x01, //                      Report Count: (1)
-    0x91, 0x02, //                      Output: (Data,Var,Abs)
-    0xC0, //                        End Collection: Physical (Pointer)
-    0xC0, //                    End Collection: Logical (Axes Enable)
-    
-    0x05, 0x0F, //              Usage Page: Physical Input Device
-    0x09, 0x56, //              Usage: Direction Enable
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximum: (0) 
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x57, //              Usage: Direction
-    0xA1, 0x02, //              Collection: Logical
-    0x05, 0x01, //                  Usage Page: Generic Desktop
-    0x09, 0x01, //                  Usage: Pointer
-    0xA1, 0x00, //                  Collection: Physical
-    0x09, 0x35, //                      Usage: Rz
-    0x16, 0xF0, 0xD8, //                Logical Minimum: (-10000)
-    0x26, 0x10, 0x27, //                Logical Maximum: (10000)
-    0x66, 0x14, 0x00, //                Uint: (Eng Rot:Angular Pos) 
-    0x75, 0x10, //                      Report Size: (16)
-    0x95, 0x01, //                      Report Count: (1)
-    0x91, 0x02, //                      Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //                Unit: (0)
-    0xC0, //                        End Collection: Physical (Pointer)
-    0xC0, //                    End Collection: Logical (Direction)
-    
-    0x05, 0x0F, //              Usage Page: Physical Input Device
-    0x09, 0xA7, //              Usage: Start Delay
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x27, 0xFF, 0xFF, 0x00, 0x00,//Logical Maximum: (65535)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0xFD, //              Unit Exponent: (-3)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (None)
-    0x55, 0x00, //              Unit Exponent: (0)
-    
-    0x09, 0x58, //              Usage: Type Specific Block Offset
-    0xA1, 0x02, //              Collection: Logical
-    0x0B, 0x01, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 1)
-    0x0B, 0x02, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 2)
-    0x15, 0x00, //                  Logical Minimum: (0)
-    0x26, 0xFD, 0x7F, //            Logical Maximum: (32765)
-    0x75, 0x10, //                  Report Size: (16)
-    0x95, 0x02, //                  Report Count: (2)
-    0x91, 0x02, //                  Output: (Data,Var,Abs)
-    0xC0, //                    End Collection: Logical (Type Specific Block Offset)
-    0xC0, //                End Collection: Logical (Set Effect Report)
+    0xC0, //                End Collection: Logical
 
-    0x09, 0x73, //          Usage: Set Constant-Force Report
-    0xA1, 0x02, //          Collection: logical
-    0x85, 0x04, //              Report ID: (4)
-    
-    0x09, 0x22,                    /*     USAGE (Effect Block Index) */
-    0x15, 0x01,
-    0x25, 0x01,
-    0x75, 0x08,
-    0x95, 0x01,
-    0x91, 0x02,
-    
-    0x09, 0x70, //              Usage: Magnitude
-    0x16, 0xF0, 0xD8, //        Logical Minimum: (-10000)
-    0x26, 0x10, 0x27, //        Logical Maximum: (10000)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Set Constant-Force Report)
-
-    0x09, 0x77, //          Usage: Effect Operation Report
+    0x09, 0x58, //          Usage: Type Specific Block Offset 
     0xA1, 0x02, //          Collection: Logical
-    0x85, 0x05, //              Report ID: (5)
-
-    0x09, 0x22,                    /*     USAGE (Effect Block Index) */
-    0x15, 0x01,
-    0x25, 0x01,
-    0x75, 0x08,
-    0x95, 0x01,
-    0x91, 0x02,
-    
-    0x09, 0x78, //              Usage: Effect Opperation
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x79, //                  Usage: OP Effect Start
-    0x09, 0x7A, //                  Usage: OP Effect Start Solo
-    0x09, 0x7B, //                  Usage: OP Effect Stop
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x03, //                  Logical Maximum: (3)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Opperation)
-    
-    0x09, 0x7C, //              Usage: Loop Count
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Effect Operation Report)
-
-    0x09, 0x95, //          Usage: PID Device Control Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x06, //              Report ID: (6)
-    
-    0x09, 0x96, //              Usage: PID Device Control
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x97, //                  Usage: DC Enable Actuators
-    0x09, 0x98, //                  Usage: DC Disable Actuators
-    0x09, 0x99, //                  Usage: DC Stop All Effects
-    0x09, 0x9A, //                  Usage: DC Reset
-    0x09, 0x9B, //                  Usage: DC Pause
-    0x09, 0x9C, //                  Usage: DC Continue
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x06, //                  Logical Maximum: (6)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (PID Device Control)
-    0xC0, //                End Collection: Logical (PID Device Control Report)
-
-    0x09, 0x7D, //          Usage: Device Gain Report
-    0xA1, 0x02, //          Collection: logical
-    0x85, 0x07, //              Report ID: (7)
-    
-    0x09, 0x7E, //              Usage: Device Gain
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0x10, 0x27, //        logical Maximum: (10000)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Device Gain Report)
-
-    0x09, 0xAB, //          Usage: Create New Effect Parameter Block Report
-    0xA1, 0x02, //          Collection: Logical 
-    0x85, 0x08, //              Report ID: (8)
-    
-    0x09, 0x25, //              Usage: Effect Type
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x26, //                  Usage: ET Constant-Force
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x01, //                  Logical Maximum: (1)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0xB1, 0x00, //                  Feature: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Type)
-    
-    0x05, 0x01, //              Usage Page: (Generic Desktop)
-    0x09, 0x3B, //              Usage: Byte Count
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0x05, 0x0F, //              Usage Page: Physical Interface Device
-    0xC0, //                End Collection: Logical (Create New Effect Parameter Block Report)
-
-    0x09, 0x89,                    /*   USAGE (PID Block Load Report) */
-    0xA1, 0x02,
-    0x85, 0x09,
-
-    0x09, 0x22,                    /*   USAGE (Effect Block Index) */
-    0x15, 0x01,
-    0x25, 0x01,
-    0x75, 0x08,
-    0x95, 0x01,
-    0xB1, 0x02,
-
-    0x09, 0x8B,                    /*   USAGE (Block Load Status) */
-    0xA1, 0x02,
-    0x09, 0x8C,                    /*     USAGE (Block Load Success) */
-    0x09, 0x8D,                    /*     USAGE (Block Load Full) */
-    0x09, 0x8E,                    /*     USAGE (Block Load Error) */
-    0x15, 0x01,
-    0x25, 0x03,
-    0x75, 0x08,
-    0x95, 0x01,
-    0xB1, 0x00,                    /*     FEATURE (Data,Ary,Abs) */
-    0xC0,
-
-    0x09, 0xAC,                    /*   USAGE (RAM Pool Available) */
-    0x15, 0x00,
-    0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
-    0x75, 0x10,
-    0x95, 0x01,
-    0xB1, 0x02,
-    0xC0,
-
-    0x09, 0x7F, //          Usage: PID Pool Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x0A, //              Report ID: (10)
-    
-    0x09, 0x80, //              Usage: Ram Pool Size
+    0x0B,0x01,0x00,0x0A,0x00, //Usage Ordinals: Instance 1
+//  0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
     0x15, 0x00, //              Logical Minimum: (0)
     0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
-    0x75, 0x10, //              Report Size: (16)
+    0x75, 0x10, //              Report Size (16)
     0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
+    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0xC0, //                End Collection: Logical (Type Specific Block Offset)
     
-    0x09, 0x83, //              Usage: Simultaneous Effects Max
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0xA9, //              Usage: Device Managed Pool
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0xAA, //              Usage: Shared Parameter Blocks
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (PID Pool Report)
+    0xC0, //            End Collection: Logical (Set Effect Report)
 
-    /*
-    0x05, 0x0F, //          Usage Page: Physical Input Device
-    0x09, 0x21, //          Usage: Set Effect Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x02, //              Report ID: (2)
+    0x09, 0x92, //      Usage: PID State Report
+    0xA1, 0x02, //      Collection: Logical
+    0x85, 0x03, //          Report ID: (3)
+
+    0x09, 0x94, //          Usage: Effect Playing
+    0x09, 0x9F, //          Usage: Device Paused
+    0x09, 0xA0, //          Usage: Actuators Enabled
+    0x09, 0xA4, //          Usage: Safety Switch
+    0x09, 0xA6, //          Usage: Actuator Power
+    0x15, 0x00, //          Logical Minimum: (0)
+    0x25, 0x01, //          Logical Maximum: (1)
+    0x75, 0x01, //          Report Size: (1)
+    0x95, 0x05, //          Report Count: (5)
+    0x81, 0x02, //          Input: (Data,Var,Abs)
+    0x95, 0x03, //          Report Count: (3)
+    0x81, 0x03, //          Input (Const,Var,Abs)
+    0xC0, //            End Collection: Logical (PID State Report)
+
+    0x09, 0x5A, //      Usage: Set Envelope Report
+    0xA1, 0x02, //      Collection: Logical
+    0x85, 0x04, //          Report ID: (4)
     
-    0x09, 0x22, //              Usage: Effect Block Index
-    0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x28, //              Logical Maximum: (40)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x09, 0x22, //          Usage: Effect Block Index
+    0x15, 0x01, //          Logical Minimum: (1)
+    0x25, 0x28, //          Logical Maximum: (40)
+    0x75, 0x08, //          Report Size: (8)
+    0x95, 0x01, //          Report Count: (1)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
     
-    0x09, 0x24, //              Usage: ROM Flag
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x00, //              Report Size: (8)
-    0x95, 0x00, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
+    0x09, 0x5B, //          Usage: Attack Level
+    0x09, 0x5D, //          Usage: Fade Level
+    0x15, 0x00, //          Logical Minimum: (0)
+    0x26, 0xFF, 0x7F, //    Logical Maximum: (32767)
+    0x75, 0x10, //          Report Size: (16)
+    0x95, 0x02, //          Report Count: (2)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
     
-    0x09, 0x25, //              Usage: Effect Type
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x26, //                  Usage: ET Constant-Force
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x01, //                  Logical Minimum: (1)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Type)
+    0x09, 0x5C, //          Usage: Attack Time
+    0x09, 0x5E, //          Usage: Fade Time
+    0x15, 0x00, //          Logical Minimum: (0)
+    0x26, 0xFF, 0x7F, //    Logical Maximum: (23767)
+    0x66, 0x03, 0x10, //    Unit: (Eng Lin:Time)
+    0x55, 0x0D, //          Unit Exponent: (-3)
+    0x75, 0x10, //          Report Size: (16)
+    0x95, 0x02, //          Report Count: (2)
+    0x91, 0x02, //          Output: (Data,Var,Abs)
+    0x66, 0x00, 0x00, //    Unit: (None)
+    0x55, 0x00, //          Unit Exponent: (0)
+    0xC0, //            End Collection: Logical (Set Envelope Report)
     
-    0x09, 0x50, //              Usage: Duration
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (NULL)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0x0D, //              Unit Exponent: (-3)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x51, //              Usage: Sample Period
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximum: (0)
-    //0x66, 0x03, 0x10, //    Unit: (Eng Lin:Time)
-    //0x55, 0x0D, //          Unit Exponent: (-3)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (0)
-    0x55, 0x00, //              Unit Exponent: (0)
-    
-    0x09, 0x52, //              Usage: Gain
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x53, //              Usage: Trigger Button
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0xFF, //              Logical Maximum: (NULL)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x54, //              Usage: Trigger Repeat Interval
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0xFF, //              Logical Maximum: (NULL)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0x0D, //              Unit Exponent: (-3)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (0)
-    0x55, 0x00, //              Unit Exponent: (0)
-    
-    0x09, 0x55, //              Usage: Axes Enable
-    0xA1, 0x02, //              Collection: Logical
-    0x05, 0x01, //                  Usage Page: Generic Desktop
-    0x09, 0x01, //                  Usage: Pointer
-    0xA1, 0x00, //                  Collection: Physical
-    0x09, 0x35, //                      Usage: Rz
-    0x15, 0x00, //                      Logical Minimum: (0)
-    0x25, 0x01, //                      Logical Maximum: (1)
-    0x75, 0x08, //                      Report Size: (8)
-    0x95, 0x01, //                      Report Count: (1)
-    0x91, 0x02, //                      Output: (Data,Var,Abs)
-    0xC0, //                        End Collection: Physical (Pointer)
-    0xC0, //                    End Collection: Logical (Axes Enable)
-    
-    0x05, 0x0F, //              Usage Page: Physical Input Device
-    0x09, 0x57, //              Usage: Direction
-    0xA1, 0x02, //              Collection: Logical
-    0x05, 0x01, //                  Usage Page: Generic Desktop
-    0x09, 0x01, //                  Usage: Pointer
-    0xA1, 0x00, //                  Collection: Physical
-    0x09, 0x35, //                      Usage: Rz
-    0x16, 0xF0, 0xD8, //                Logical Minimum: (-10000)
-    0x26, 0x10, 0x27, //                Logical Maximum: (10000)
-    0x66, 0x14, 0x00, //                Uint: (Eng Rot:Angular Pos) 
-    0x75, 0x10, //                      Report Size: (16)
-    0x95, 0x01, //                      Report Count: (1)
-    0x91, 0x02, //                      Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //                Unit: (0)
-    0xC0, //                        End Collection: Physical (Pointer)
-    0xC0, //                    End Collection: Logical (Direction)
-    
-    0x05, 0x0F, //              Usage Page: Physical Input Device
-    0x09, 0xA7, //              Usage: Start Delay
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximum: (0)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x58, //              Usage: Type Specific Block Offset
-    0xA1, 0x02, //              Collection: Logical
-    0x0B, 0x01, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 1)
-    0x0B, 0x02, 0x00, 0x0A, 0x00,// Usage: (Ordinals:Instance 2)
-    0x15, 0x00, //                  Logical Minimum: (0)
-    0x26, 0xFD, 0x7F, //            Logical Maximum: (32765)
-    0x75, 0x10, //                  Report Size: (16)
-    0x95, 0x02, //                  Report Count: (2)
-    0x91, 0x02, //                  Output: (Data,Var,Abs)
-    0xC0, //                    End Collection: Logical (Type Specific Block Offset)
-    0xC0, //                End Collection: Logical (Set Effect Report)
-    
-    0x09, 0x5A, //          Usage: Set Envolope Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x03, //              Report ID: (3)
-    
-    0x09, 0x23, //              Usage: Parameter Block Offset
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFd, 0x7F, //        Logical Maximum: (32765)
-    0x75, 0x0F, //              Report Size: (15)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x24, //              Usage: ROM Flag
-    0x15, 0x00, //              Logical Minumum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x01, //              Report Size: (1)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x5B, //              Usage: Attack Level
-    0x09, 0x5D, //              Usage: Fade Level
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x02, //              Report Count: (2)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x5C, //              Usage: Attack Time
-    0x09, 0x5E, //              Usage: Fade Time
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0x10, 0x27, //        Logical Maximum: (10000)
-    0x35, 0x00, //              Physical Minimum: (0)
-    0x46, 0x10, 0x27, //        Physical Maximum: (10000)
-    0x66, 0x03, 0x10, //        Unit: (Eng Lin:Time)
-    0x55, 0x0D, //              Unit Exponent: (-3)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x02, //              Report Count: (2)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0x66, 0x00, 0x00, //        Unit: (0)
-    0x55, 0x00, //              Unit Exponent: (0)
-    0x45, 0x00, //              Physical Maximum: (0)
-    0xC0, //                End Collection: Logical (Set Effect Report)
-    
-    0x09, 0x73, //          Usage: Set Constant-Force Report
-    0xA1, 0x02, //          Collection: logical
-    0x85, 0x04, //              Report ID: (4)
-    
-    0x09, 0x23, //              Usage: Parameter Block Offset
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFd, 0x7F, //        Logical Maximum: (32765)
-    0x75, 0x0F, //              Report Size: (15)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x24, //              Usage: ROM Flag
-    0x15, 0x00, //              Logical Minumum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x01, //              Report Size: (1)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    
-    0x09, 0x70, //              Usage: Magnitude
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Set Constant-Force Report)
-    
-    0x09, 0x77, //          Usage: Effect Operation Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x05, //              Report ID: (5)
-    
-    0x09, 0x78, //              Usage: Effect Opperation
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x79, //                  Usage: OP Effect Start
-    0x09, 0x7A, //                  Usage: OP Effect Start Solo
-    0x09, 0x7B, //                  Usage: OP Effect Stop
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x03, //                  Logical Maximum: (3)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Opperation)
-    
-    0x09, 0x7C, //              Usage: Loop Count
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximim: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Effect Operation Report)
-    
-    0x09, 0x7D, //          Usage: Device Gain Report
-    0xA1, 0x02, //          Collection: logical
-    0x85, 0x06, //              Report ID: (6)
-    
-    0x09, 0x7E, //              Usage: Device Gain
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Device Gain Report)
-    
-    0x09, 0xAB, //          Usage: Create New Effect Parameter Block Report
-    0xA1, 0x02, //          Collection: Logical 
-    0x85, 0x07, //              Report ID: (7)
-    
-    0x09, 0x25, //              Usage: Effect Type
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x26, //                  Usage: ET Constant-Force
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x01, //                  Logical Maximum: (1)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0xB1, 0x00, //                  Feature: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Type)
-    
-    0x05, 0x01, //              Usage Page: (Generic Desktop)
-    0x09, 0x3B, //              Usage: Byte Count
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Create New Effect Parameter Block Report)
-    
-    0x05, 0x0F, //          Usage Page: Physical Input Device
-    0x09, 0x89, //          Usage: Effect Parameter Block Load Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x08, //              Report ID: (8)
-    
-    0x09, 0x22, //              Usage: Effect Parameter Block Index
-    0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x28, //              Logical Maximum: (40)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0x8B, //              Usage: Effect Parameter Block Load Status
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x8C, //                  Usage: Block Load Success
-    0x09, 0x8D, //                  Usage: Block Load Full
-    0x09, 0x8E, //                  Usage: Block Load Error
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x03, //                  Logical Maximum: (3)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0xB1, 0x00, //                  Feature: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (Effect Parameter Block Load Status)
-    
-    0x09, 0xAC, //              Usage: RAM Pool Available
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x27, 0xFF, 0xFF, 0, 0, //  Logical Maximum: (65535)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (Effect Parameter Block Load Report)
-    
-    0x09, 0x90, //          Usage: PID Block Free Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x09, //              Report ID: (9)
-    
-    0x09, 0x22, //              Usage: Effect Block Index
-    0x15, 0x01, //              Logical Minimum: (1)
-    0x25, 0x28, //              Logical Maximum: (40)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x91, 0x02, //              Output: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (PID Block Free Report) 
-    
-    0x09, 0x92, //          Usage: PID State Report
-    0xA1, 0x02, //          Collection: Logical 
-    0x85, 0x0A, //              Report ID: (10)
-    
-    0x09, 0x22, //              Usage: Effect Block Index
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x28, //              Logical Maximum: (40)
-    0x75, 0x07, //              Report Size: (7)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    0x09, 0x24, //              Usage: ROM Flag
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x01, //              Report Size: (1)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs) 
-    
-    // TODO: THIS IS NOT OPTIMAL AT ALL!!!!!!!!!!! PACK BETTER
-    0x09, 0x94, //              Usage: Effect Playing
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    
-    0x09, 0x9F, //              Usage: Device Paused
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    
-    0x09, 0xA0, //              Usage: Actuators Enabled
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    
-    0x09, 0xA4, //              Usage: Safety Switch
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    
-    0x09, 0xA5, //              Usage: Actuator Overide Switch
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximim: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs)
-    
-    0x09, 0xA6, //              Usage: Actuator Power
-    0x15, 0x01, //              Logical Minimum: (-1)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0x81, 0x02, //              Input: (Data,Var,Abs) 
-    0xC0, //                End Collection: Logical (PID State Report)
-    
-    0x09, 0x95, //          Usage: PID Device Control Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x0B, //              Report ID: (11)
-    
-    0x09, 0x96, //              Usage: PID Device Control
-    0xA1, 0x02, //              Collection: Logical
-    0x09, 0x97, //                  Usage: DC Enable Actuators
-    0x09, 0x98, //                  Usage: DC Disable Actuators
-    0x09, 0x99, //                  Usage: DC Stop All Effects
-    0x09, 0x9A, //                  Usage: DC Reset
-    0x09, 0x9B, //                  Usage: DC Pause
-    0x09, 0x9C, //                  Usage: DC Continue
-    0x15, 0x01, //                  Logical Minimum: (1)
-    0x25, 0x06, //                  Logical Maximum: (6)
-    0x75, 0x08, //                  Report Size: (8)
-    0x95, 0x01, //                  Report Count: (1)
-    0x91, 0x00, //                  Output: (Data,Arr,Abs)
-    0xC0, //                    End Collection: Logical (PID Device Control)
-    0xC0, //                End Collection: Logical (PID Device Control Report)
-    
-    0x09, 0x7F, //          Usage: PID Pool Report
-    0xA1, 0x02, //          Collection: Logical
-    0x85, 0x0C, //              Report ID: (12)
-    
-    0x09, 0x80, //              Usage: Ram Pool Size
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
-    0x75, 0x10, //              Report Size: (16)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0x83, //              Usage: Simultaneous Effects Max
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x26, 0xFF, 0x00, //        Logical Maximum: (255)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0xA9, //              Usage: Device Managed Pool
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    
-    0x09, 0xAA, //              Usage: Shared Parameter Blocks
-    0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x01, //              Logical Maximum: (1)
-    0x75, 0x08, //              Report Size: (8)
-    0x95, 0x01, //              Report Count: (1)
-    0xB1, 0x02, //              Feature: (Data,Var,Abs)
-    0xC0, //                End Collection: Logical (PID Pool Report)
-    */
-    
-    0xC0 //             End Collection: Application (Top Level)
+    0xC0, //        End Collection: Application (Top Level)
 };
 
 static const uint8_t udConfigurationDescriptor[] PROGMEM = {

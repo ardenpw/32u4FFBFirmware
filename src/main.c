@@ -2,6 +2,16 @@
 int main() {
     SH1107_init();
     usbInit();
+
+    DDRD &= ~(1 << PORTD3);
+    PORTD |= (1 << PORTD3);
+
+    EICRA &= ~(1 << ISC30);
+    EICRA &= ~(1 << ISC31);
+
+    EIMSK |= (1 << INT3);
+
+    sei();
     
     while(1) { 
         prepUSBReport(); 
