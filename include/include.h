@@ -12,9 +12,12 @@
 
 #include "global.h"
 #include "USB.h"
+#include "HIDDefs.h"
+#include "FFBDefs.h"
 #include "SH1107.h"
 #include "mySPI.h"
 #include "MT6835.h"
 #include "udDescriptors.h"
+#include "FFBState.h"
 
 #endif //#ifndef include_h

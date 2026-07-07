@@ -61,7 +61,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x85, 0x02, //          Report ID: (2)    
 
     0x09, 0x22, //          Usage: Effect Block Index
-    0x15, 0x00, //          logical Minimum: (0)
+    0x15, 0x01, //          logical Minimum: (1)
     0x25, 0x28, //          Logical Maximum: (40)
     0x75, 0x08, //          Report Size: (8)
     0x95, 0x01, //          Report Count: (1)
@@ -123,7 +123,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x05, 0x01, //              Usage Page: Generic Desktop
     0x09, 0x30, //              Usage: X
     0x15, 0x00, //              Logical Minimum: (0)
-    0x25, 0x00, //              Logical Maximim: (0)
+    0x25, 0x01, //              Logical Maximim: (1)
     0x75, 0x01, //              Report Size: (1)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
@@ -140,7 +140,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x09, 0x57, //          Usage: Direction
     0xA1, 0x02, //          Collection: Logical
     0x0B,0x01,0x00,0x0A,0x00, //Usage Ordinals: Instance 1
-//  0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
+    0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
     0x15, 0x00, //              Logical Minimum: (0)
     0x26, 0xA0, 0x8C, //        Logical Maximum: (36000)
     0x75, 0x10, //              Report Size: (16)
@@ -151,7 +151,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x09, 0x58, //          Usage: Type Specific Block Offset 
     0xA1, 0x02, //          Collection: Logical
     0x0B,0x01,0x00,0x0A,0x00, //Usage Ordinals: Instance 1
-//  0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
+    0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
     0x15, 0x00, //              Logical Minimum: (0)
     0x26, 0xFD, 0x7F, //        Logical Maximum: (32765)
     0x75, 0x10, //              Report Size (16)
@@ -235,7 +235,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
     0x09, 0x58, //          Usage: Type Specific Block Offset
     0xA1, 0x02, //          Collection: Logical
     0x0B,0x01,0x00,0x0A,0x00, //Usage Ordinals: Instance 1
-    //	0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
+    0x0B,0x02,0x00,0x0A,0x00, //Usage Ordinals: Instance 2
     0x75, 0x02, //              Report Size: (2)
     0x95, 0x01, //              Report Count: (1)
     0x91, 0x02, //              Output: (Data,Var,Abs)
@@ -545,7 +545,7 @@ static const uint8_t udHIDReportDescriptor[] PROGMEM = {
    0xC0, //        End Collection: Application (Top Level)
    };
    
-   static const uint8_t udConfigurationDescriptor[] PROGMEM = {
+static const uint8_t udConfigurationDescriptor[] PROGMEM = {
     //configuration descriptor
     
     9, //bLength
@@ -640,11 +640,10 @@ static const uint8_t udStringDeviceDescriptor[] PROGMEM = {
 };
 
 static const uint8_t udPIDPoolReport[] PROGMEM = {
-    0x0A, // Report ID: (12)
-    0x40, 0x00, // Ram Pool Size: (64)
-    0x01, // Simultaneous effects max: (1)
-    0x01, // Device Managed Pool
-    0x00, // Shared Parameter Block
+    0x0F, // Report ID: (15)
+    0xFF, 0x00, // Ram Pool Size: (255)
+    0x28, // Simultaneous effects max: (40)
+    0b00000011 // 1: Shared Blocks, 0: (1) Device Managed
 };
 
 #endif // #ifndef udDescriptors.h

@@ -38,7 +38,6 @@ int16_t count = 0;
 uint8_t reportRDY = 0;
 uint8_t unknownPacket = 0;
 uint8_t sofTick = 0;
-static uint8_t buf[64];
 uint8_t inputFlags = 1;
 /*
 7:
@@ -51,20 +50,6 @@ uint8_t inputFlags = 1;
 0: Input Report
 */
 
-typedef struct {
-    uint8_t reportID;
-    int16_t x;
-    int16_t y;
-} HIDInputReport;
-
-typedef struct {
-    uint8_t reportID;
-    uint8_t effectBlockIndex;
-    uint8_t state;
-} HIDPIDStateReport;
-
-HIDInputReport pendHIDInRept;
-HIDPIDStateReport pendHIDStateInRept;
 
 void prepUSBReport(void) {
     if (!udCfgStatus) { return; }
@@ -79,20 +64,6 @@ void prepUSBReport(void) {
     
     cli(); // dissable interrupts so we get a non-malformed data struct
 
-    if (inputFlags & (1 << 1)) {
-        pendHIDStateInRept.reportID = 2;
-        pendHIDStateInRept.effectBlockIndex = 1;
-        pendHIDStateInRept.effectBlockIndex &= ~(1 << 7); // set bit 7 to 0 for RAM. 
-                                                          //setting to 1 already does this but whatever
-        pendHIDStateInRept.state &= ~(1 << 0);
-        pendHIDStateInRept.state &= ~(1 << 0);
-        pendHIDStateInRept.state &= ~(1 << 0);
-        pendHIDStateInRept.state &= ~(1 << 0);
-        pendHIDStateInRept.state &= ~(1 << 0);
-        pendHIDStateInRept.state &= ~(1 << 0);
-        reportRDY = 1;
-    } 
-    else {
         curr = (MT6835_burstRead() >> 11);
         delta = (int32_t)(curr - last);
         
@@ -114,8 +85,7 @@ void prepUSBReport(void) {
         pendHIDInRept.reportID = 1;
         pendHIDInRept.x = output;
         pendHIDInRept.y = 0;
-        reportRDY = 1;
-    }
+        //reportRDY = 1;
     
     sei();
 }
@@ -129,7 +99,6 @@ void ep1RDY(void) {
     UEINTX &= ~(1 << TXINI);
     if (inputFlags & (1 << 1)) {
         UEDATX = pendHIDStateInRept.reportID;
-        UEDATX = pendHIDStateInRept.effectBlockIndex;
         UEDATX = pendHIDStateInRept.state;
         inputFlags &= ~(1 << 1);
     }
@@ -146,6 +115,7 @@ void ep1RDY(void) {
 }
 
 void ep2Dump(void) {
+    static uint8_t buf[64];
     UENUM = 2;
     if (!(UEINTX & (1 << RXOUTI))) { return; }  // no packet waiting
     
@@ -154,16 +124,19 @@ void ep2Dump(void) {
     for (uint8_t i = 0; i < byteCount; i++) {
         buf[i] = UEDATX;
     }
-    
-    if (buf[0] == 0x06) {
-        inputFlags |= (1 << 1);
-    }
-    
-    
-    SH1107_drawString(0,10,1,"%u",++count);
 
     UEINTX &= ~(1 << RXOUTI);   // acknowledge receipt
     UEINTX &= ~(1 << FIFOCON);  // release bank back to SIE
+    
+    switch (buf[0]) {
+        case 0x0b:
+            FFB_handleControl(buf[1]);
+            break;
+    }    
+    
+    // temporary
+    SH1107_drawString(0,10,1,"%u",++count);
+
 }   
 
 ISR(INT3_vect){
@@ -191,14 +164,13 @@ ISR(USB_GEN_vect) {
         
         UEIENX = (1 << RXSTPE);
     }
-    /*
+    
     if (flags & (1 << SOFI)) {
         if (udCfgStatus) {
-            UENUM = 1;
-            // add a sof tick, only when this is set in main loop, do we send
+            reportRDY = 1;
         }
     }
-    */
+    
 }
 
 ISR(USB_COM_vect) {
@@ -397,7 +369,7 @@ ISR(USB_COM_vect) {
         }
 
         if (bRequest == GET_REPORT) {
-            if (wValue == 0x030A) {
+            if (wValue == 0x030F) {
                 // Type: Feature, Report ID: (12)
                 // This is the PID Pool Report
                 while(!(UEINTX & (1 << TXINI)));
